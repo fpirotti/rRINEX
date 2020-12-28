@@ -13,6 +13,7 @@ RINEX(FILE.fp)
 Create RINEX object
 }
 \examples{
-RINEX(NA) 
+rinex.file.path<-system.file("extdata", "example.20o", package = "rRINEX")
+rinex.obj<-RINEX(rinex.file.path) 
 }
 \keyword{RINEX}

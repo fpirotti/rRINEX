@@ -15,7 +15,8 @@
 #' @keywords RINEX
 #' @export
 #' @examples
-#' RINEX(NA) 
+#' rinex.file.path<-system.file("extdata", "example.20o", package = "rRINEX")
+#' rinex.obj<-RINEX(rinex.file.path) 
 RINEX<-function(FILE.fp)
 { 
   
@@ -41,7 +42,8 @@ syscodes<-"GREJSC" # satellite system codes */
 obscodes<-"CLDS"   # obs type codes */
     
 frqcodes<-"125678"   #frequency codes */
-      
+
+
 ura_eph<-c(    # ura values (ref [3] 20.3.3.3.1.1) */
           2.4,3.4,4.85,6.85,9.65,13.65,24.0,48.0,96.0,192.0,384.0,768.0,1536.0, 3072.0,6144.0,0.0
         )
