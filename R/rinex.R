@@ -1,17 +1,12 @@
-# RINEX parser
-# A lot of code from RTKLIB! 
-# Some useful keyboard shortcuts for package authoring:
-#
-#   Install Package:           'Ctrl + Shift + B'
-#   Check Package:             'Ctrl + Shift + E'
-#   Test Package:              'Ctrl + Shift + T'
-
-# decode obs header ---------------------------------------------------------*/
-
+library("tools")
+library("R.utils")
 #' Create RINEX object
 #' 
 #' @param FILE.fp file path to RINEX file.
-#'
+#' @description  This class creates a RINEX object thus allows 
+#' to open and process RINEX files. Was tested in Linux, not tested in Windows,
+#' please send feedback
+#' 
 #' @keywords RINEX
 #' @export
 #' @examples
@@ -20,45 +15,89 @@
 RINEX<-function(FILE.fp)
 { 
   
-  if(is.na(FILE.fp) || file.exists(FILE.fp)){
+  if(is.na(FILE.fp) || !file.exists(FILE.fp)){
     warning("File does not exist")
     return(NULL)
   }
-MAXOBSTYPE  <- 64
-NUMSYS      <-6                   # number of systems */
-MAXRNXLEN   <-(16*MAXOBSTYPE+4)   # max rinex record length */
-MAXPOSHEAD  <-1024                # max head line position */
-MINFREQ_GLO <--7                  # min frequency number glonass */
-MAXFREQ_GLO <-13                  # max frequency number glonass */
-NINCOBS     <-262144              # inclimental number of obs data */
 
-# satellite systems */
-navsys<-c(          
-    "SYS_GPS","SYS_GLO","SYS_GAL","SYS_QZS","SYS_SBS","SYS_CMP","0"
-)
-
-syscodes<-"GREJSC" # satellite system codes */
+   
+  file.extension<- tools::file_ext(FILE.fp)
+  sy<-get_os()
   
-obscodes<-"CLDS"   # obs type codes */
+   
+  
+  if(toupper(file.extension)=="Z"){
+    message("Extracting compressed file")
+    if(sy!="windows"){
+      system(sprintf('uncompress -k %s',FILE.fp))
+    } else {
+      stop("Sorry, Windows is not yet supported. Please use software like 7zip or WinZip to un compress the .Z file and then use the uncompressed file.")
+    }
+    FILE.fp<-gsub(sprintf("[.]%s$", file.extension), "", 
+                  FILE.fp, ignore.case = TRUE)
+    file.extension<- tools::file_ext(FILE.fp)
+    cat(file.extension)
+  } 
+  
+  
+  if(toupper(file.extension)=="GZ"){
+    message("Extracting GZIP compressed file")
+    R.utils::gunzip(FILE.fp, remove=F, overwrite=T)
+    FILE.fp<-gsub(sprintf("[.]%s$", file.extension), "", 
+                  FILE.fp, ignore.case = TRUE)
+    file.extension<- tools::file_ext(FILE.fp)
+    cat(file.extension)
+  } 
+   
+  hatanaka<-NULL 
+  if(Sys.which("crx2rnx")!="") hatanaka<-Sys.which("crx2rnx")
+  if(Sys.which("crx2rnx.exe")!="") hatanaka<-Sys.which("crx2rnx.exe")
+ 
+  if(is.null(hatanaka)){
+    warning("Your file seems to be in Hatanaka-compressed ASCII format version, 
+         but the crx2rnx executable for decompressing is NOT found 
+         in your system. rRINEX will try to use apps included in 
+            the package accorrding to your  platform")
+   
+  }
+ 
+  MAXOBSTYPE  <- 64
+  NUMSYS      <-6                   # number of systems */
+  MAXRNXLEN   <-(16*MAXOBSTYPE+4)   # max rinex record length */
+  MAXPOSHEAD  <-1024                # max head line position */
+  MINFREQ_GLO <--7                  # min frequency number glonass */
+  MAXFREQ_GLO <-13                  # max frequency number glonass */
+  NINCOBS     <-262144              # inclimental number of obs data */
+  
+  # satellite systems */
+  navsys<-c(          
+      "SYS_GPS","SYS_GLO","SYS_GAL","SYS_QZS","SYS_SBS","SYS_CMP","0"
+  )
+  
+  syscodes<-"GREJSC" # satellite system codes */
     
-frqcodes<-"125678"   #frequency codes */
-
-
-ura_eph<-c(    # ura values (ref [3] 20.3.3.3.1.1) */
-          2.4,3.4,4.85,6.85,9.65,13.65,24.0,48.0,96.0,192.0,384.0,768.0,1536.0, 3072.0,6144.0,0.0
-        )
-
-# type definition -----------------------------------------------------------*/
-sigind_t<-list(                        # signal index type */
-            n=NA,                              # number of index */
-            frq=NA,               # signal frequency (1:L1,2:L2,...) */
-            pos=NA,               # signal index in obs data (-1:no) */
-            pri <-NA,    # signal priority (15-0) */
-            type<-NA,    # type (0:C,1:L,2:D,3:S) */
-            code<-NA,    # obs code (CODE_L??) */
-            shift<-NA        # phase shift (cycle) */
+  obscodes<-"CLDS"   # obs type codes */
+      
+  frqcodes<-"125678"   #frequency codes */
+  
+  
+  ura_eph<-c(    # ura values (ref [3] 20.3.3.3.1.1) */
+            2.4,3.4,4.85,6.85,9.65,13.65,24.0,48.0,96.0,192.0,384.0,768.0,1536.0, 3072.0,6144.0,0.0
           )
-        
+  
+  header<-list()
+  # type definition -----------------------------------------------------------*/
+  sigind_t<-list(                        # signal index type */
+              n=NA,                              # number of index */
+              frq=NA,               # signal frequency (1:L1,2:L2,...) */
+              pos=NA,               # signal index in obs data (-1:no) */
+              pri <-NA,    # signal priority (15-0) */
+              type<-NA,    # type (0:C,1:L,2:D,3:S) */
+              code<-NA,    # obs code (CODE_L??) */
+              shift<-NA        # phase shift (cycle) */
+            )
+          
+
  
   decode_obsh<-function(FILE.fp)
   {
@@ -87,7 +126,8 @@ sigind_t<-list(                        # signal index type */
           next
         }
         label<- substr(line, 61, 80)
-        print(line)
+        content<- substr(line, 0, 60)
+        header[label]<-
         if(label == "END OF HEADER") break
       }
       
@@ -95,4 +135,6 @@ sigind_t<-list(                        # signal index type */
       
   }
 
+  type<-tolower(substr(file.extension, nchar(file.extension), nchar(file.extension) ) )
+   
 }

@@ -10,7 +10,9 @@ RINEX(FILE.fp)
 \item{FILE.fp}{file path to RINEX file.}
 }
 \description{
-Create RINEX object
+This class creates a RINEX object thus allows 
+to open and process RINEX files. Was tested in Linux, not tested in Windows,
+please send feedback
 }
 \examples{
 rinex.file.path<-system.file("extdata", "example.20o", package = "rRINEX")
