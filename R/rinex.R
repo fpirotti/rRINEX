@@ -1,6 +1,13 @@
 library("tools")
 library("R.utils")
-#' Create RINEX object
+## usethis namespace: start
+## @useDynLib rRINEX, .registration = TRUE
+## usethis namespace: end
+## usethis namespace: start
+## @importFrom Rcpp sourceCpp
+## usethis namespace: end
+
+#' @title Create RINEX object
 #' 
 #' @param FILE.fp file path to RINEX file.
 #' @description  This class creates a RINEX object thus allows 
@@ -22,45 +29,17 @@ RINEX<-function(FILE.fp)
 
    
   file.extension<- tools::file_ext(FILE.fp)
-  sy<-get_os()
+  
   
    
-  
-  if(toupper(file.extension)=="Z"){
-    message("Extracting compressed file")
-    if(sy!="windows"){
-      system(sprintf('uncompress -k %s',FILE.fp))
-    } else {
-      stop("Sorry, Windows is not yet supported. Please use software like 7zip or WinZip to un compress the .Z file and then use the uncompressed file.")
-    }
-    FILE.fp<-gsub(sprintf("[.]%s$", file.extension), "", 
-                  FILE.fp, ignore.case = TRUE)
-    file.extension<- tools::file_ext(FILE.fp)
-    cat(file.extension)
-  } 
-  
-  
-  if(toupper(file.extension)=="GZ"){
-    message("Extracting GZIP compressed file")
-    R.utils::gunzip(FILE.fp, remove=F, overwrite=T)
-    FILE.fp<-gsub(sprintf("[.]%s$", file.extension), "", 
-                  FILE.fp, ignore.case = TRUE)
-    file.extension<- tools::file_ext(FILE.fp)
-    cat(file.extension)
-  } 
-   
-  hatanaka<-NULL 
-  if(Sys.which("crx2rnx")!="") hatanaka<-Sys.which("crx2rnx")
-  if(Sys.which("crx2rnx.exe")!="") hatanaka<-Sys.which("crx2rnx.exe")
- 
-  if(is.null(hatanaka)){
-    warning("Your file seems to be in Hatanaka-compressed ASCII format version, 
-         but the crx2rnx executable for decompressing is NOT found 
-         in your system. rRINEX will try to use apps included in 
-            the package accorrding to your  platform")
-   
-  }
- 
+ #  if(is.null(hatanaka)){
+ #    warning("Your file seems to be in Hatanaka-compressed ASCII format version, 
+ #         but the crx2rnx executable for decompressing is NOT found 
+ #         in your system. rRINEX will try to use apps included in 
+ #            the package accorrding to your  platform")
+ #   rRINEX::crx2rnx(FILE.fp)
+ # }
+
   MAXOBSTYPE  <- 64
   NUMSYS      <-6                   # number of systems */
   MAXRNXLEN   <-(16*MAXOBSTYPE+4)   # max rinex record length */

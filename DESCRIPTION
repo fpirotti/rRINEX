@@ -12,4 +12,4 @@ RoxygenNote: 7.1.1
 Imports: 
     sf,
     tools,
-    R.utils
+    R.utils 

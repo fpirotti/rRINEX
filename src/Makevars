@@ -1,0 +1,19 @@
+INSTDIR=../inst
+
+LIBCRX2RNX	=  hatanaka/crx2rnx.o
+
+CRX2RNX =  crx2rnx$(WIN)
+
+all: clean  $(CRX2RNX)
+
+executables:  $(CRX2RNX)
+
+ 
+$(CRX2RNX): $(LIBCRX2RNX)
+	$(CC) $(CPPFLAGS) $(CFLAGS)  -ansi -O2 -static -o $(CRX2RNX) $(LIBCRX2RNX)
+	mkdir -p $(INSTDIR)/bin
+	cp -f $(CRX2RNX) $(INSTDIR)/bin 
+ 
+
+clean:
+	rm -f $(SHLIB) $(OBJECTS) $(LIBCRX2RNX) $(CRX2RNX)
