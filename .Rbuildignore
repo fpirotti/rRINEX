@@ -1,6 +1,5 @@
 ^.*\.Rproj$
-^\.Rproj\.user$
-^src$
+^\.Rproj\.user$ 
 ^data-raw$ 
 ^dev$
 ^inst$
