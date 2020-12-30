@@ -2,6 +2,6 @@
 ^\.Rproj\.user$ 
 ^data-raw$ 
 ^dev$
-^inst$
+^inst$ 
 ^src/crx2rnx$
 ^src/crx2rnx.exe$

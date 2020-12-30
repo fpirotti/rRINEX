@@ -318,10 +318,10 @@ void fileopen(int argc, char *argv[]){
             fprintf(stderr,"The file %s already exists. Overwrite?(n)",outfile);
             if(getchar() != 'y') exit(EXIT_SUCCESS);
         }
-        freopen(outfile,"w",stdout);
+        FILE* dummyfp = freopen(outfile,"w",stdout);
     }
     fclose(ifp);
-    freopen(infile,"r",stdin);
+    FILE* dummyfp2 = freopen(infile,"r",stdin);
 }
 /*---------------------------------------------------------------------*/
 void header(void){

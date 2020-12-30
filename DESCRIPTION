@@ -6,8 +6,10 @@ Author: Francesco Pirotti
 Maintainer: Francesco Pirotti <francesco.pirotti@unipd.it>
 Description: Reads RINEX data, for now only the header.
 License: CC BY 4.0
+Depends: R (>= 3.5.0)
 Encoding: UTF-8
-LazyData: true
+LazyData: true   
+URL:  https://github.com/fpirotti/rRINEX (devel)
 RoxygenNote: 7.1.1
 Imports: 
     sf,
