@@ -4,10 +4,10 @@
 \alias{RINEX}
 \title{Create RINEX object}
 \usage{
-RINEX(FILE.fp)
+RINEX(filepath)
 }
 \arguments{
-\item{FILE.fp}{file path to RINEX file.}
+\item{filepath}{file path to RINEX file.}
 }
 \description{
 This class creates a RINEX object thus allows 

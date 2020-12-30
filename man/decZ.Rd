@@ -10,7 +10,7 @@ decZ(filepath)
 \item{filepath}{path of file to be decompressed}
 }
 \value{
-path to decompressed file or NULL on error
+path to decompressed file or NULL on problem
 }
 \description{
 Decompress .Z files (Linux only for now)

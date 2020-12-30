@@ -41,25 +41,25 @@ crx2rnx<-function(filepath){
   if(path2crx2rnx==""){
     stop("crx2rnx executable not found in package, please contact developer.")
   }
-  res<-tryCatch( 
-      system(paste(path2crx2rnx, filepath), intern=T ) 
-     ,
-    error = function(e) {
-      e
-    },
-    warning = function(e) {
-      e
-    }
-  )
-  if(is.element("warning", class(res)) || is.element("error", class(res))){
+  # res<-tryCatch( 
+  ret<-system(paste(path2crx2rnx, "-f", filepath), intern=T) 
+  
+  if(!is.null(attr(ret,"status"))){
     warning("Something did not work in crx2rnx decompression, check warning messages.")
     return(NULL)
   }
-  if(!is.character(res)){
-    warning("Something did not work in crx2rnx decompression, check warning messages.")
-    return(NULL)
-  }
-  return(res)
+
+  
+  file.extension<- tools::file_ext(filepath)
+  type<-substr(file.extension, nchar(file.extension), nchar(file.extension))
+  
+  if(tolower(type)=="d") filepath.new<-gsub("[dD]$", 
+                                            "o", 
+                                            filepath)
+  
+  if(tolower(file.extension)=="crx") filepath.new<-gsub(".crx$", ".rnx", filepath)
+  
+  filepath.new
   
 }
 
@@ -72,7 +72,7 @@ crx2rnx<-function(filepath){
 #'
 #' @param filepath path of file to be decompressed
 #'
-#' @return path to decompressed file or NULL on error
+#' @return path to decompressed file or NULL on problem
 #' @export
 #'
 #' @examples decZ(system.file("extdata", "pado348o.20d.Z", package = "rRINEX"))
@@ -89,14 +89,15 @@ decZ<-function(filepath){
     if(sy!="windows"){
       system(sprintf('uncompress -k %s',filepath))
     } else {
-      stop("Sorry, Windows is not yet supported. Please use software like 7zip or WinZip to un compress the .Z file and then use the uncompressed file.")
+      warning("Sorry, Windows is not yet supported. Please use software like 7zip or WinZip to un compress the .Z file and then use the uncompressed file.")
+      return(NULL)
     }
     filepath<-gsub(sprintf("[.]%s$", file.extension), "", 
                    filepath, ignore.case = TRUE)
     
   } else {
     warning("Does not have .Z extension, stopping") 
-    filepath<-NULL
+    return(NULL)
   } 
   
   filepath
@@ -129,6 +130,39 @@ decGZip<-function(filepath){
 
 
 
+#' decZip
+#' @title Unzip files and return RINEX files in ZIP archive
+#' @description  Unzip files and return a character vector with names of RINEX files
+#' @param filepath path of file to be decompressed
+#'
+#' @return character vector with names of RINEX files or NULL on error or on missing RINEX files
+#' @export 
+decZip<-function(filepath){
+  file.extension<- tools::file_ext(filepath)
+  if(toupper(file.extension)=="ZIP"){
+    message("Found ZIP file, will uncompress and try to find a file with any of 
+            the following extensions:
+            YYo, YYn, YYd, .Z, or .gz and further process any of them")
+    filepaths<- utils::unzip(filepath,list = T)
+    
+    
+    filepaths.keep<- file.path(dirname(filepath),
+                               grep("(\\.[0-9][0-9][gGdDoOzZnN]$|\\.crx$|\\.Z$|\\.gz$)", 
+                                    filepaths$Name, value = T, ignore.case = T ))
+    
+    if(length(filepaths.keep)==0){
+      warning("No RINEX files found inside ZIP files!")
+      return(NULL)
+    }
+    
+    utils::unzip(filepath,files = basename(filepaths.keep) , 
+          exdir = dirname(filepath))
+    
+    filepaths.keep
+  }
+}
+
+
 #' Decompress
 #' @description  Decompress .Z or .gz files
 #' @param filepath path of file to be decompressed
@@ -140,8 +174,14 @@ decompress<-function(filepath){
     warning("File ", filepath, " does not exist") 
     return(NULL)
   } 
+  
   file.extension<- tools::file_ext(filepath)
-  if(toupper(file.extension)=="GZ"){
+
+
+  
+  file.extension<- tools::file_ext(filepath)
+  
+  if(toupper(file.extension[[1]])=="GZ"){
     filepath<- decGZip(filepath)
   }
   if(toupper(file.extension)=="Z"){
