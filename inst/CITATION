@@ -1,0 +1,16 @@
+citHeader("To cite rRINEX in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "rRINEX a package for supporting RINEX GNSS file analysis",
+  author   = "Francesco Pirotti",
+  journal  = "Open Geospatial Data Software and Standards",
+  year     = "XXXX",
+  volume   = "",
+  number   = "",
+  pages    = "",
+  url      = "",
+  textVersion = paste(""
+
+  )
+)

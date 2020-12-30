@@ -1,6 +1,14 @@
 library("tools")
 library("R.utils")
 
+#' rRINEX.RINEX.OBS
+#' @title rRINEX.RINEX.OBSt
+#'  
+#' @description  RINEX observation file template object 
+#' like from (\href{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html}{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html})
+#' 
+#' @export
+#' 
 rRINEX.RINEX.OBS<-list(
   header=list(
     RINEX_VERSION=NA, 
@@ -76,7 +84,6 @@ RINEX<-function(filepath)
             2.4,3.4,4.85,6.85,9.65,13.65,24.0,48.0,96.0,192.0,384.0,768.0,1536.0, 3072.0,6144.0,0.0
           )
   
-  header<-list()
   # type definition -----------------------------------------------------------*/
   sigind_t<-list(                        # signal index type */
               n=NA,                              # number of index */
@@ -89,10 +96,12 @@ RINEX<-function(filepath)
             )
           
 
- 
+  
   decode_obsh<-function(filepath)
   {
-    if(is.na(filepath) || file.exists(filepath)){
+    
+    header<-list()
+    if(is.na(filepath) || !file.exists(filepath)){
       warning("File does not exist")
       return(NULL)
     }
@@ -111,21 +120,24 @@ RINEX<-function(filepath)
       while ( TRUE ) {
         cc<-cc+1
         print(cc)
-        if(cc > 60) break
+        if(cc > 84) break
         line = readLines(con, n = 1)
         if ( nchar(line) < 61 ) {
           next
         }
         label<- substr(line, 61, 80)
         content<- substr(line, 0, 60)
-        header[label]<-
+        tmp<-(strsplit(content,"  "))[[1]]
+        tmp<-trimws(tmp[tmp!=""])
+        header[label]<- list(tmp)
+          
         if(label == "END OF HEADER") break
       }
       
       close(con)
-      
+      header
   }
 
-  type<-tolower(substr(file.extension, nchar(file.extension), nchar(file.extension) ) )
-   
+  header<-decode_obsh(filepath)
+  
 }

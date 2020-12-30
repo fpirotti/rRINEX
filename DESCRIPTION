@@ -16,4 +16,6 @@ Imports:
     tools,
     R.utils,
     utils,
-    mapview
+    mapview,
+    stats,
+    proj4

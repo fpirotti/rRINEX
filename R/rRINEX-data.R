@@ -23,3 +23,5 @@
 #' data(stazioniGNSSita)  
 #' stazioniGNSSita[1,]
 "stazioniGNSSita"
+
+

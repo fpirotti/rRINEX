@@ -21,6 +21,7 @@ Please check license
 }
 \references{
 LICENSE:   
+(\href{https://terras.gsi.go.jp/ja/crx2rnx/LICENSE.txt}{https://terras.gsi.go.jp/ja/crx2rnx/LICENSE.txt})
 See the following paper for more detail of the compression format and the tools:
 
 PAPER:  

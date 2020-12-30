@@ -10,9 +10,9 @@ library("R.utils")
 #' Please check license  
 #' 
 #' @references LICENSE:   
-#//' (\href{https://terras.gsi.go.jp/ja/crx2rnx/LICENSE.txt}{https://terras.gsi.go.jp/ja/crx2rnx/LICENSE.txt})
+#' (\href{https://terras.gsi.go.jp/ja/crx2rnx/LICENSE.txt}{https://terras.gsi.go.jp/ja/crx2rnx/LICENSE.txt})
 #' See the following paper for more detail of the compression format and the tools:    
-#//' 
+#' 
 #' @references PAPER:  
 #//' Hatanaka, Y. (2008): A Compression Format and Tools for GNSS Observation Data,
 #' Bulletin of the Geographical Survey Institute, 55, 21-30,
@@ -148,7 +148,7 @@ decZip<-function(filepath){
     
     filepaths.keep<- file.path(dirname(filepath),
                                grep("(\\.[0-9][0-9][gGdDoOzZnN]$|\\.crx$|\\.Z$|\\.gz$)", 
-                                    filepaths$Name, value = T, ignore.case = T ))
+                                    filepaths$Name, value = T, ignore.case = T ) )
     
     if(length(filepaths.keep)==0){
       warning("No RINEX files found inside ZIP files!")
@@ -158,7 +158,8 @@ decZip<-function(filepath){
     utils::unzip(filepath,files = basename(filepaths.keep) , 
           exdir = dirname(filepath))
     
-    filepaths.keep
+    ## RETURNS only .o
+    filepaths.keep[[1]]
   }
 }
 
@@ -177,7 +178,10 @@ decompress<-function(filepath){
   
   file.extension<- tools::file_ext(filepath)
 
-
+  
+  if(toupper(file.extension[[1]])=="ZIP"){
+    filepath<- decZip(filepath)
+  }
   
   file.extension<- tools::file_ext(filepath)
   
@@ -187,5 +191,6 @@ decompress<-function(filepath){
   if(toupper(file.extension)=="Z"){
     filepath<- decZ(filepath)
   }
+  filepath
 }
 
