@@ -30,7 +30,16 @@ crx2rnx<-function(filepath){
   
   path2crx2rnx <- system.file("bin", "crx2rnx", package = "rRINEX")
   if(path2crx2rnx==""){
-    stop("crx2rnx executable not found in package, please contact developer")
+    path2crx2rnx <- system.file("bin", "crx2rnx64.exe", package = "rRINEX")
+  }
+  if(path2crx2rnx==""){
+    path2crx2rnx <- system.file("bin", "crx2rnx32.exe", package = "rRINEX")
+  }
+  if(path2crx2rnx==""){
+    path2crx2rnx <- system.file("bin", "crx2rnx.exe", package = "rRINEX")
+  }
+  if(path2crx2rnx==""){
+    stop("crx2rnx executable not found in package, please contact developer.")
   }
   res<-tryCatch( 
       system(paste(path2crx2rnx, filepath), intern=T ) 
