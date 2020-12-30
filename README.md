@@ -1,15 +1,32 @@
+
 # rRINEX
 
-## Description 
+<!-- badges: start -->
+<!-- badges: end -->
 
-Reads RINEX observation files, provides approximate survey position and suggests nearby permanent stations from which base station RINEX files can by downloaded for post-processing static and kinematic surveys with other libraries (e.g. [RTKLIB](https://www.rtklib.com){target=_blank}).    
+The goal of rRINEX is to ...
 
+## Installation    
 
+You can install the released version of rRINEX from [CRAN](https://CRAN.R-project.org) with:
 
-## Installation
+``` r
+install.packages("rRINEX")
+```
 
-Please install with:
+And the development version from [GitHub](https://github.com/) with:
 
-    install_github("https://github.com/fpirotti/rRINEX") 
-    
-Remember to install Rtools for your system.
+``` r
+# install.packages("devtools")
+devtools::install_github("fpirotti/rRINEX")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+``` r
+library(rRINEX)
+## basic example code
+```
+
