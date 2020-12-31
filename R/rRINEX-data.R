@@ -19,6 +19,8 @@
 #'
 #' @source \href{http://retegnssveneto.cisas.unipd.it/gpsitn}{Rete GNSS Veneto}
 #'
+#' @export
+#' 
 #' @examples
 #' data(stazioniGNSSita)  
 #' stazioniGNSSita[1,]

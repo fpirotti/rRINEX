@@ -97,47 +97,47 @@ RINEX<-function(filepath)
           
 
   
-  decode_obsh<-function(filepath)
-  {
-    
-    header<-list()
-    if(is.na(filepath) || !file.exists(filepath)){
-      warning("File does not exist")
-      return(NULL)
-    }
-    # default codes for unknown code */
-      defcodes<-c(
-        "CWX   ",   # GPS: L125___ */
-          "CC    ",   # GLO: L12____ */
-          "X XXXX",   # GAL: L1_5678 */
-          "CXXX  ",   # QZS: L1256__ */
-          "C X   ",   # SBS: L1_5___ */
-          "X  XX "    # BDS: L1__67_ */
-      )
-      
-      con = file(filepath, "r")
-      cc<-0
-      while ( TRUE ) {
-        cc<-cc+1
-        print(cc)
-        if(cc > 84) break
-        line = readLines(con, n = 1)
-        if ( nchar(line) < 61 ) {
-          next
-        }
-        label<- substr(line, 61, 80)
-        content<- substr(line, 0, 60)
-        tmp<-(strsplit(content,"  "))[[1]]
-        tmp<-trimws(tmp[tmp!=""])
-        header[label]<- list(tmp)
-          
-        if(label == "END OF HEADER") break
-      }
-      
-      close(con)
-      header
-  }
+  # decode_obsh<-function(filepath)
+  # {
+  #   
+  #   header<-list()
+  #   if(is.na(filepath) || !file.exists(filepath)){
+  #     warning("File does not exist")
+  #     return(NULL)
+  #   }
+  #   # default codes for unknown code */
+  #     defcodes<-c(
+  #       "CWX   ",   # GPS: L125___ */
+  #         "CC    ",   # GLO: L12____ */
+  #         "X XXXX",   # GAL: L1_5678 */
+  #         "CXXX  ",   # QZS: L1256__ */
+  #         "C X   ",   # SBS: L1_5___ */
+  #         "X  XX "    # BDS: L1__67_ */
+  #     )
+  #     
+  #     con = file(filepath, "r")
+  #     cc<-0
+  #     while ( TRUE ) {
+  #       cc<-cc+1
+  #       print(cc)
+  #       if(cc > 84) break
+  #       line = readLines(con, n = 1)
+  #       if ( nchar(line) < 61 ) {
+  #         next
+  #       }
+  #       label<- substr(line, 61, 80)
+  #       content<- substr(line, 0, 60)
+  #       tmp<-(strsplit(content,"  "))[[1]]
+  #       tmp<-trimws(tmp[tmp!=""])
+  #       header[label]<- list(tmp)
+  #         
+  #       if(label == "END OF HEADER") break
+  #     }
+  #     
+  #     close(con)
+  #     header
+  # }
 
-  header<-decode_obsh(filepath)
+  header<-getInfoFromRINEX.OBS.header(filepath)
   
 }
