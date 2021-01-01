@@ -19,6 +19,11 @@ Uses compiled code from crx2rnx.c
 Original C code is from https://terras.gsi.go.jp/ja/crx2rnx.html
 Please check license
 }
+\examples{
+ef<-paths.to.example.files()  
+crx2rnx(ef$obs.rover)
+
+}
 \references{
 LICENSE:   
 (\href{https://terras.gsi.go.jp/ja/crx2rnx/LICENSE.txt}{https://terras.gsi.go.jp/ja/crx2rnx/LICENSE.txt})

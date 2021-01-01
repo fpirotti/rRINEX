@@ -18,4 +18,10 @@ Imports:
     utils,
     mapview,
     stats,
-    proj4
+    proj4,
+    lwgeom,
+    lattice,
+    pingr,
+    RCurl,
+    XML,
+    mgsub

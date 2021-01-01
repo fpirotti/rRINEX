@@ -22,9 +22,12 @@ library("R.utils")
 #' @param filepath path to file that is Hatanaka-compressed RINEX format
 #' @return character string of path to decompressed file
 #'
-#' @example  crx2rnx(system.file("extdata", "pado348o.20d.Z", package = "rRINEX"))
+#' @examples
+#' ef<-paths.to.example.files()  
+#' crx2rnx(ef$obs.rover)
+#' 
 crx2rnx<-function(filepath){
-  if(!file.exists(filepath)){
+  if(is.null(filepath) || !file.exists(filepath)){
     stop("File does not exist")
   }
   

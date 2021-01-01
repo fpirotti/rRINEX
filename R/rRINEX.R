@@ -1,27 +1,3 @@
-library("tools")
-library("R.utils")
-
-#' rRINEX.RINEX.OBS
-#' @title rRINEX.RINEX.OBSt
-#'  
-#' @description  RINEX observation file template object 
-#' like from (\href{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html}{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html})
-#' 
-#' @export
-#' 
-rRINEX.RINEX.OBS<-list(
-  header=list(
-    RINEX_VERSION=NA, 
-    TYPE=NA,
-    COMMENT=NA,
-    APPROX_POSITION_XYZ=NA,
-    INTERVAL=NA,
-    TIME_OF_FIRST_OBS=NA,
-    TIME_OF_LAST_OBS=NA
-  ),
-  epochs=list()
-)
-
 #' @title Create RINEX object
 #' 
 #' @param filepath file path to RINEX file.
