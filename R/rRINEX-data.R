@@ -27,8 +27,13 @@
 #' @export
 #' 
 #' @examples
-#' ## NOT RUN: mapview() + mapview(stazioniGNSS$ITA)
-#' ## NOT RUN: mapview() + mapview(stazioniGNSS$IGSNetwork)
+#' ## NOT RUN: data(World, metro, rivers, land)
+#' ## NOT RUN: tmap::tmap_mode("plot") 
+#' ## NOT RUN:   tmap::tm_shape(tmap::World) +
+#' ## NOT RUN:   tmap::tm_borders("black", lwd = .5)  + 
+#' ## NOT RUN:    tmap::tm_shape(stazioniGNSS$IGSNetwork) +
+#' ## NOT RUN:             tmap::tm_symbols(col = "red", scale=.3 ) +
+#' ## NOT RUN:             tmap::tm_legend(show = FALSE)
 "stazioniGNSS"
 
   

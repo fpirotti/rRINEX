@@ -12,16 +12,21 @@ LazyData: true
 URL: https://github.com/fpirotti/rRINEX (devel)
 RoxygenNote: 7.1.1
 Imports: 
+    qpdf,
+    lattice,
     sf,
     tools,
     R.utils,
     utils,
-    mapview,
     stats,
     proj4,
     lwgeom,
-    lattice,
     pingr,
     RCurl,
     XML,
-    mgsub
+    mgsub,
+    tmap
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

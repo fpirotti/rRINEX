@@ -7,17 +7,17 @@
 getClosestStations(rinexFile, nStations = 3)
 }
 \arguments{
-\item{rinexFile}{can be either a RINEX file 
-(must have APPROX POSITION XYZ information in header, check (\href{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html}{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html})  ) 
-OR
-can be an XY coordinate in  longitude and latitude  e.g. c(12.432, 45.542)
-OR 
-can be an (sf) object (not yet implemented)}
+\item{rinexFile}{can be either:
+\itemize{
+  \item path to a RINEX file - (must have APPROX POSITION XYZ information in header, check (\href{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html}{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html})  )
+  \item  an XY coordinate in  longitude and latitude  e.g. c(12.432, 45.542)
+  \item an \code{sf} object
+}}
 
 \item{nStations}{number of closest stations to find. Default=3}
 }
 \value{
-An sf object with three closest stations and distances.
+An sf object with closest stations and distances.
 }
 \description{
 Get closest permenent base station with GNSS

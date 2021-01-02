@@ -3,6 +3,9 @@
 ^data-raw$ 
 ^dev$
 ^inst$ 
+^vignettes/. 
+^inst/bin/crx2rnx$
+^inst/bin/crx2rnx.exe$ 
 ^src/crx2rnx$
 ^src/crx2rnx.exe$
 ^CODE_OF_CONDUCT\.md$

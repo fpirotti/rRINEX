@@ -215,15 +215,16 @@ getFile.Veneto<-function(timestamp, station, onlycheck=F){
 
 #' Get closest permenent base station with GNSS 
 #'
-#' @param rinexFile can be either a RINEX file 
-#' (must have APPROX POSITION XYZ information in header, check (\href{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html}{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html})  ) 
-#' OR
-#' can be an XY coordinate in  longitude and latitude  e.g. c(12.432, 45.542)
-#' OR 
-#' can be an (sf) object (not yet implemented)
+#' @param rinexFile can be either:
+#' \itemize{
+#'   \item path to a RINEX file - (must have APPROX POSITION XYZ information in header, check (\href{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html}{https://gage.upc.edu/sites/default/files/gLAB/HTML/Observation_Rinex_v3.01.html})  )
+#'   \item  an XY coordinate in  longitude and latitude  e.g. c(12.432, 45.542)
+#'   \item an \code{sf} object
+#' } 
+#'   
 #' @param nStations number of closest stations to find. Default=3 
 #' 
-#' @return An sf object with three closest stations and distances.
+#' @return An sf object with closest stations and distances.
 
 #' 
 #' @export
@@ -233,37 +234,45 @@ getFile.Veneto<-function(timestamp, station, onlycheck=F){
 #' getClosestStations(ef[["obs.rover"]])
 getClosestStations<-function(rinexFile, nStations=3){
   
-  if(is.character(rinexFile)) pos<-getInfoFromRINEX.OBS.header(rinexFile) 
+  if(is.character(rinexFile)) {
+    point<- getApproxPositionFromRINEX.OBS.header(rinexFile, class = "sf") 
+  }
   else if(length(rinexFile)==2 && 
           is.numeric(rinexFile[[1]]) &&
           is.numeric(rinexFile[[2]])
   ) {
+    
     pos<-list(latlong=rinexFile)
+    if(length(pos$latlong)!=2){
+      warning("Something wrong with lat and long values, ", 
+              pos$latlong[[1]], ", ", pos$latlong[[2]])
+      return(NULL)
+    }
+    point<- sf::st_sfc(sf::st_point(pos$latlong), crs = 9000)
+    
+  }
+  else if( is.element("sfc", class(rinexFile)  )  ) 
+  {
+    point<-rinexFile
   }
   else{
-    warning("Something wrong with lat and long values, ", 
+    warning("Something wrong with the input value ", 
             rinexFile)
     return(NULL)
   }
-  if(length(pos$latlong)!=2){
-    warning("Something wrong with lat and long values, ", 
-            pos$latlong[[1]], ", ", pos$latlong[[2]])
-    return(NULL)
-  }
-  point<- sf::st_sfc(sf::st_point(pos$latlong), crs = 9000)
-  
-  stazioniGNSSita<-stazioniGNSS[["ITA"]]
+
+  stz<-stazioniGNSS$IGSNetwork
   
   st.near.station<-NULL
   for(i in 1:nStations){
     
-    stz1<-sf::st_nearest_feature(point, stazioniGNSSita)
+    stz1<-sf::st_nearest_feature(point, stz)
     if(is.null(st.near.station)) {
-      st.near.station<-stazioniGNSSita[stz1,]
+      st.near.station<-stz[stz1,]
     } else {
-      st.near.station<-rbind(st.near.station, stazioniGNSSita[stz1,])
+      st.near.station<-rbind(st.near.station, stz[stz1,])
     }
-    stazioniGNSSita<-stazioniGNSSita[-stz1,]
+    stz<-stz[-stz1,]
     
   }
   
@@ -274,20 +283,31 @@ getClosestStations<-function(rinexFile, nStations=3){
 
 #' Show closest GNSS stations in mapview 
 #'
-#' @param rinexFile observation RINEX file 
+#' @param rinexFile observation RINEX file  
+#' @param nStations number of closest stations. Default is 3.
+#' @param interactive Uses \code{tmap} package, sets interactive or static.
 #'
-#' @return Shows mapview of points.
+#' @return Shows interactive or static map of points.
 #' 
 #' @export
 #' @examples 
 #'  ef<-paths.to.example.files() 
 #'  ## plotClosestStation(ef$obs.rover)
-plotClosestStation<-function(rinexFile){
-  pos<-getInfoFromRINEX.OBS.header(rinexFile) 
-  closestStations<-getClosestStations(pos)
-  mapview::mapview()
-  + 
-    mapview::mapview(closestStations, label=closestStations$nid ) +
-    mapview::mapview(pos, label="RINEX", color="red" ) 
+plotClosestStations<-function(rinexFile, nStations=3, interactive=F){
+  point<- rRINEX::getApproxPositionFromRINEX.OBS.header(rinexFile, class="sf") 
+  sf.close<-getClosestStations(point, nStations)
+  if(interactive){
+    tmap::tmap_mode("view")
+    tmap::tm_shape(sf.close) +
+      tmap::tm_symbols(col="blue", scale=.99) +
+      tmap::tm_shape(point) +
+      tmap::tm_symbols(col="red", scale=1.5) 
+  } else { 
+    tmap::tmap_mode("plot")
+    tmap::tm_shape(sf.close) +
+      tmap::tm_symbols(col="blue", scale=.99) +
+      tmap::tm_shape(point) +
+      tmap::tm_symbols(col="red", scale=1.5) 
+  }
   
 }

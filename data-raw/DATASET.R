@@ -28,9 +28,9 @@ latlong<-as.data.frame(sc)/pi*180
 df<-cbind( latlong[,1:2], stazioni[,1] )
 names(df)<-c("x","y", "name")
 stazioniGNSS.IGSNetwork<-sf::st_as_sf(df, coords=c("x","y"), crs=9000  )
-mapview()+
- # mapview(stazioniGNSS.IGSNetwork)+
-  mapview(stazioniGNSS.ITA)
+# mapview()+
+#  # mapview(stazioniGNSS.IGSNetwork)+
+#   mapview(stazioniGNSS.ITA)
 
 
 ######################

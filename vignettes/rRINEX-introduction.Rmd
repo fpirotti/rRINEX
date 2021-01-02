@@ -1,0 +1,83 @@
+---
+title: "rRINEX Introduction"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rRINEX-introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+# rRINEX: get started!  
+
+
+## RTKLIB
+
+Upon loading the library , the user will be asked to specify the path were RTKLIB bin folder is located in the machine running R.  
+
+It is strongly advised that you install  [RTKLIB](http://www.rtklib.com){target=_blank} to use all of the functionalities of rRINEX.  
+
+
+```{r setup }
+#library(lattice)
+library(tmap) 
+library(rRINEX)
+```
+
+### Example data  
+
+The reference to some example  RINEX files.  
+
+```{r loadData}
+ef<-rRINEX::paths.to.example.files()
+print(ef)
+```
+
+### Get approximate  position of survey from RINEX file  
+
+Get and plot the approximate position of the survey using the 
+RINEX observation file. 
+NB: --- *not* all RINEX observation files have this information.
+
+```{r getinfo}
+info<-rRINEX::getInfoFromRINEX.OBS.header(ef$obs.rover)
+print(info)
+```
+
+
+### Get position of closest base stations to survey  
+
+Get and plot the approximate position of the survey using the 
+RINEX observation file. 
+NB: --- *not* all RINEX observation files have this information.
+
+```{r getbs}
+rinex.info<- rRINEX::getInfoFromRINEX.OBS.header(ef$obs.rover)
+
+point<- sf::st_sfc(sf::st_point(rinex.info$latlong), crs = 9000)
+
+sf.close<-rRINEX::getClosestStations(ef$obs.rover)
+
+tmap::tmap_mode("view")
+tmap::tm_shape(sf.close) +
+    tmap::tm_symbols(col="blue", scale=.99) +
+tmap::tm_shape(point) +
+    tmap::tm_symbols(col="red", scale=1.5)
+```
+
+## Which base stations are used?  
+
+You  have two choices, Italy's stations, or EUREF. Below is an example plotting both
+
+```{r, out.width="100%" }
+tmap::tmap_mode("view")
+tmap::tm_shape(rRINEX::stazioniGNSS$IGSNetwork) +
+    tmap::tm_dots(col="blue" ) +
+tmap::tm_shape(rRINEX::stazioniGNSS$ITA) +
+    tmap::tm_dots(col="red") 
+```

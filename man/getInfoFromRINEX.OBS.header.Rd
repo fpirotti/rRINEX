@@ -5,15 +5,11 @@
 \title{Get time and space information from RINEX Observaton file}
 \usage{
 getInfoFromRINEX.OBS.header(rinexFile)
-
-getInfoFromRINEX.OBS.header(rinexFile)
 }
 \arguments{
 \item{rinexFile}{observation RINEX file}
 }
 \value{
-latlong values as c(longitude, latitude)
-
 A list with coordinates and timestamp.
 \itemize{
   \item latlong - Latitude and longitude in GRS80 datum.
@@ -22,12 +18,8 @@ A list with coordinates and timestamp.
 }
 \description{
 Get time and space information from RINEX Observaton file
-
-Get time and space information from RINEX Observaton file
 }
 \examples{
-rinexFile<-paths.to.example.files()[["obs.rover"]]
-getInfoFromRINEX.OBS.header(rinexFile)
 rinexFile<-paths.to.example.files()[["obs.rover"]]
 getInfoFromRINEX.OBS.header(rinexFile)
 }
