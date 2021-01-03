@@ -62,6 +62,7 @@
 #'
 #' 
 paths.to.example.files<-function(){
+  
  list(  obs.rover=system.file("extdata", "example.20o", package = "rRINEX"),
         nav=system.file("extdata", "example.20o", package = "rRINEX"),
         obs.base=system.file("extdata", "example.20o", package = "rRINEX")

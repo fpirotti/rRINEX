@@ -1,5 +1,5 @@
 ---
-title: "rRINEX Introduction"
+title: "rRINEX Get Started!"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{rRINEX-introduction}
@@ -13,7 +13,20 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-# rRINEX: get started!  
+
+## Which CORS stations are used to process survey RINEX?  
+
+You  have two choices, Italy's CORS stations, or EUREF CORS stations.  
+Below is an example plotting both in red and blue respectively.
+
+
+```{r  message=F, out.width="100%" }
+# tmap::tmap_mode("view")
+# tmap::tm_shape(rRINEX::stazioniGNSS$IGSNetwork) +
+#     tmap::tm_dots(col="blue" ) +
+# tmap::tm_shape(rRINEX::stazioniGNSS$ITA) +
+#     tmap::tm_dots(col="red") 
+```
 
 
 ## RTKLIB
@@ -25,7 +38,7 @@ It is strongly advised that you install  [RTKLIB](http://www.rtklib.com){target=
 
 ```{r setup }
 #library(lattice)
-library(tmap) 
+#library(tmap) 
 library(rRINEX)
 ```
 
@@ -33,7 +46,7 @@ library(rRINEX)
 
 The reference to some example  RINEX files.  
 
-```{r loadData}
+```{r  message=F}
 ef<-rRINEX::paths.to.example.files()
 print(ef)
 ```
@@ -41,10 +54,11 @@ print(ef)
 ### Get approximate  position of survey from RINEX file  
 
 Get and plot the approximate position of the survey using the 
-RINEX observation file. 
+RINEX observation file.   
+
 NB: --- *not* all RINEX observation files have this information.
 
-```{r getinfo}
+```{r  message=F}
 info<-rRINEX::getInfoFromRINEX.OBS.header(ef$obs.rover)
 print(info)
 ```
@@ -53,31 +67,20 @@ print(info)
 ### Get position of closest base stations to survey  
 
 Get and plot the approximate position of the survey using the 
-RINEX observation file. 
+RINEX observation file.   
+
 NB: --- *not* all RINEX observation files have this information.
 
-```{r getbs}
+```{r comment=F, message=F, warning=F }
 rinex.info<- rRINEX::getInfoFromRINEX.OBS.header(ef$obs.rover)
 
 point<- sf::st_sfc(sf::st_point(rinex.info$latlong), crs = 9000)
 
 sf.close<-rRINEX::getClosestStations(ef$obs.rover)
 
-tmap::tmap_mode("view")
-tmap::tm_shape(sf.close) +
-    tmap::tm_symbols(col="blue", scale=.99) +
-tmap::tm_shape(point) +
-    tmap::tm_symbols(col="red", scale=1.5)
-```
-
-## Which base stations are used?  
-
-You  have two choices, Italy's stations, or EUREF. Below is an example plotting both
-
-```{r, out.width="100%" }
-tmap::tmap_mode("view")
-tmap::tm_shape(rRINEX::stazioniGNSS$IGSNetwork) +
-    tmap::tm_dots(col="blue" ) +
-tmap::tm_shape(rRINEX::stazioniGNSS$ITA) +
-    tmap::tm_dots(col="red") 
+# tmap::tmap_mode("view")
+# tmap::tm_shape(sf.close) +
+#     tmap::tm_symbols(col="blue", scale=.99) +
+# tmap::tm_shape(point) +
+#     tmap::tm_symbols(col="red", scale=1.5)
 ```

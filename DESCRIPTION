@@ -2,17 +2,23 @@ Package: rRINEX
 Type: Package
 Title: Reads RINEX files
 Version: 0.1.1
-Author: Francesco Pirotti
+Authors@R: 
+    c(person(given = "Francesco",
+             family = "Pirotti",
+             role = c("cre", "aut"),
+             email = "francesco.pirotti@unipd.it",
+             comment = c(ORCID = "0000-0002-4796-6406") ) )
 Maintainer: Francesco Pirotti <francesco.pirotti@unipd.it>
 Description: Reads RINEX data, for now only the header.
 License: CC BY 4.0
 Depends: R (>= 3.5.0)
+Language: en-US
 Encoding: UTF-8
 LazyData: true   
-URL: https://github.com/fpirotti/rRINEX (devel)
+URL: https://github.com/fpirotti/rRINEX  
+BugReports: https://github.com/fpirotti/rRINEX/issues
 RoxygenNote: 7.1.1
-Imports: 
-    qpdf,
+Imports:  
     lattice,
     sf,
     tools,

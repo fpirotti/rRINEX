@@ -1,0 +1,29 @@
+---
+title: "rRINEX - Interaction with RTKLIB"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rRINEX-RTKLIB}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## RTKLIB
+
+Upon loading the library , the user will be asked to specify the path were RTKLIB bin folder is located in the machine running R.  
+
+It is strongly advised that you install  [RTKLIB](http://www.rtklib.com){target=_blank} to use all of the functionalities of rRINEX.  
+
+
+```{r setup }
+
+#library(tmap) 
+library(rRINEX)
+```
