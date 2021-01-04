@@ -1,31 +1,33 @@
 ---
 title: "rRINEX Get Started!"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    keep_md: true 
+    toc: true
+self_contained: no
 vignette: >
   %\VignetteIndexEntry{rRINEX-introduction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc} 
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
+knitr::opts_chunk$set(collapse = T, fig.width=6, fig.height=3,
   comment = "#>"
-)
+) 
 ```
-
-## Which CORS stations are used to process survey RINEX?  
+  
+## Get started  
 
 You  have two choices, Italy's CORS stations, or EUREF CORS stations.  
 Below is an example plotting both in red and blue respectively.
 
 
 ```{r  message=F, out.width="100%" }
-# tmap::tmap_mode("view")
-# tmap::tm_shape(rRINEX::stazioniGNSS$IGSNetwork) +
-#     tmap::tm_dots(col="blue" ) +
-# tmap::tm_shape(rRINEX::stazioniGNSS$ITA) +
-#     tmap::tm_dots(col="red") 
+
+
+
 ```
 
 
@@ -51,7 +53,7 @@ ef<-rRINEX::paths.to.example.files()
 print(ef)
 ```
 
-### Get approximate  position of survey from RINEX file  
+### Get and plot approximate  position of survey from RINEX file  
 
 Get and plot the approximate position of the survey using the 
 RINEX observation file.   
@@ -59,8 +61,13 @@ RINEX observation file.
 NB: --- *not* all RINEX observation files have this information.
 
 ```{r  message=F}
-info<-rRINEX::getInfoFromRINEX.OBS.header(ef$obs.rover)
-print(info)
+info<- rRINEX::getApproxPositionFromRINEX.OBS.header(ef$obs.rover)
+print(sprintf("Long. %f and Lat. %f ", info[[1]], info[[2]] ) ) 
+## Window buffer in degrees
+buffer<-0.001
+# area <- get_stamenmap(bbox = c(left = info[[1]] - buffer, bottom =info[[2]] - buffer, 
+#                                   right = info[[1]]+buffer, top = info[[2]] + buffer), zoom=14)
+#  
 ```
 
 

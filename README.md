@@ -32,14 +32,4 @@ devtools::install_github("fpirotti/rRINEX")
 
 ## Examples
 
-This is a basic example which shows you how to plot approximate position of a survey from the 
-RINEX observation file, providing the header has the "APPROX POSITION XYZ"  geocentric coordinate 
-(could be missing on kinematic surveys):
-
-``` r
-library(rRINEX)
-ef<-rRINEX::paths.to.example.files()
-rRINEX::plotClosestStation(ef$obs.rover)
-## basic example code
-```
-
+Check out the vignettes to see examples.

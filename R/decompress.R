@@ -21,7 +21,8 @@ library("R.utils")
 #'
 #' @param filepath path to file that is Hatanaka-compressed RINEX format
 #' @return character string of path to decompressed file
-#'
+#' @export
+#' 
 #' @examples
 #' ef<-paths.to.example.files()  
 #' crx2rnx(ef$obs.rover)

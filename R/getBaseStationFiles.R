@@ -21,17 +21,16 @@
 #' timestamp2parts( (Sys.time() - 14*60*60*24) )
 timestamp2parts<-function(timestamp){
   list(
-
-Y = format(timestamp, "%Y"),
-y = format(timestamp, "%y"),
-m = format(timestamp, "%m"),
-d = format(timestamp, "%d"),
-h = format(timestamp, "%H"),
-H = letters[(as.integer(format(timestamp, "%H"))+1)],
-M = format(timestamp, "%M"),
-n = format(timestamp, "%j"),
-W = format(timestamp, "%W"),
-D = format(timestamp, "%V") 
+    Y = format(timestamp, "%Y"),
+    y = format(timestamp, "%y"),
+    m = format(timestamp, "%m"),
+    d = format(timestamp, "%d"),
+    h = format(timestamp, "%H"),
+    H = letters[(as.integer(format(timestamp, "%H"))+1)],
+    M = format(timestamp, "%M"),
+    n = format(timestamp, "%j"),
+    W = format(timestamp, "%W"),
+    D = format(timestamp, "%V") 
   )
   
 }
@@ -49,15 +48,23 @@ D = format(timestamp, "%V")
 #' url<-"ftps://gdc.cddis.eosdis.nasa.gov/gps/data/campaign/mgex/hourly/rinex3/%n/%h/%s%n%H.%yd.Z"
 #' formatURL(url, (Sys.time() - 14*60*60*24) )
 #' 
-formatURL<-function(url, timestamp, stationname=NA){
+formatURL<-function(url, tms, stationname=NA){
   
-  nn<-timestamp2parts(timestamp)
-  toMatch <- sprintf("%%%s", names(nn) )
- 
-  url<-mgsub::mgsub(string = url, pattern = toMatch, replacement = unlist(nn) )
-  if(!is.na(stationname)) {
-    url <- gsub("%s", stationname, url )
+  nn <- timestamp2parts(tms)
+  
+  if(!is.na(stationname) ) {
+    
+    if(nchar(stationname)!=4){
+      warning("Station name should be 4 characters. \"", stationname, "\" (", nchar(stationname), " characters) were found.")
+    }
+    
+    nn <- c(nn, s=tolower(stationname), S=toupper(stationname), r=stationname )
+    toMatch <- sprintf("%%%s",  names(nn)  )
+    
   }
+  
+  url<-mgsub::mgsub(string = url, pattern = toMatch, replacement = unlist(nn) )
+  
   ww<-which(strsplit(url, "")[[1]]=="%")
   if( length(ww)>0 ){
     warning("Some elements were not substituted: ", url)
@@ -83,31 +90,37 @@ formatURL<-function(url, timestamp, stationname=NA){
 #'
 #' @return file path to downloaded observation and navigation files if download is successful,
 #' or logical FALSE if not, or  if only checking logical TRUE or FALSE
-#'
+#' @export
 #' @examples 
 #' ## download file from 2 weeks before today from Genova's baset station
-#' filepath<-getFile.liguria( as.POSIXct(Sys.time() - 14*(60*60*24) ), "GENU" )
+#' ## 
+#' filepath<-get.IGS( as.POSIXct(Sys.time() - 14*(60*60*24) ), "GENU" )
 #' print(filepath)
 #' file.remove(filepath)
-get.IGS<-function(timestamp, station, onlycheck=F, type="highrate"){
+get.IGS<-function(tms, station, onlycheck=F, type="highrate"){
   
-  ts<-timestamp2parts(timestamp)
+   
   
   base<-"igs.bkg.bund.de"
-  url<-sprintf("http://%s/root_ftp/IGS/%s/%s/%s/%s", base, type,
-               ts$Y, ts$n,
-               ts$H )
   
-  fn<-sprintf("%s%s%s.%sd.Z", tolower(station), (ts$n), ts$h, ts$y)
+  url.string<-"https://igs.bkg.bund.de/root_ftp/IGS/highrate/%Y/%n/%H/%S00"
+  url.tot<-formatURL(url.string, tms, station)
   
-  isup<-pingr::is_up(base)  && RCurl::url.exists(url)
+  url.string<-"https://igs.bkg.bund.de/root_ftp/IGS/highrate/%Y/%n/%H"
+  url.base<-formatURL(url.string, tms, station)
+
+  isup <- pingr::is_up(url.base)  && RCurl::url.exists(url.base)
   
   if(onlycheck) return(isup)
   else if (!onlycheck && !isup) return(F) 
   
-  result <- RCurl::getURL("https://igs.bkg.bund.de/root_ftp/IGS/highrate/2020/263/l/",verbose=F,
+  result <- RCurl::getURL(url,verbose=F,
                           ftp.use.epsv=TRUE, dirlistonly = TRUE)
   htmlinks<-XML::getHTMLLinks(result)
+  
+  grep(sprintf("^%s", station), htmlinks)
+  
+  grep(sprintf("ITA_"), htmlinks, value = T)
   
 }
 
@@ -127,7 +140,7 @@ get.IGS<-function(timestamp, station, onlycheck=F, type="highrate"){
 #'
 #' @return file path to downloaded observation and navigation files if download is successful,
 #' or logical FALSE if not, or  if only checking logical TRUE or FALSE
-#'
+#' @export
 #' @examples 
 #' ## download file from 2 weeks before today from Genova's baset station
 #' filepath<-getFile.liguria( as.POSIXct(Sys.time() - 14*(60*60*24) ), "GENU" )
@@ -176,7 +189,7 @@ getFile.liguria<-function(timestamp, station, onlycheck=F){
 #'
 #' @return file path to downloaded observation and navigation files if download is successful,
 #' or logical FALSE if not, or  if only checking logical TRUE or FALSE
-#' 
+#' @export
 #' @examples 
 #' ## download file from 2 weeks before today from Padova's base GNSS station
 #' filepath<-try( getFile.Veneto( as.POSIXct(Sys.time() - 14*(60*60*24) ), "PADO" ) )

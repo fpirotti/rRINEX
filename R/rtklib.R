@@ -12,6 +12,50 @@ rtklib.checkIsWorking <- function(){
   tf
 }
 
+#' Gets path to RTLIB
+#'
+#' @return path to RTKLIB set by user interactively with setRTKLIB()
+#' @export
+#'
+#' @examples getRTKLIB()
+getRTKLIB<-function( ){
+  Sys.getenv("RTKLIB_rnx2rtkp")
+}  
+
+#' Sets path to RTLIB
+#'
+#' @param RTKLIB_bindir path to RTKLIB bin *directory*, i.e. where executable rnx2rtkp is located. 
+#' Default is NULL. If not set (or NULL) then interactively asks user-input. 
+#'
+#' @return logical TRUE on success, or message with error
+#' @export
+#'
+#' @examples setRTKLIB("/usr/bin")
+setRTKLIB<-function(RTKLIB_bindir=NULL){
+  Sys.unsetenv("RTKLIB_rnx2rtkp")
+  if(!is.null(RTKLIB_bindir)){
+    if(RTKLIB_bindir=="") return("Aborted by user.")
+    if(!dir.exists(RTKLIB_bindir)){
+      warning(paste("Directory", RTKLIB_bindir, "does not exist, try again or press return to quit."))
+      setRTKLIB()
+    }
+    RTKLIB_rnx2rtkp<- ifelse(get_os()=="windows", 
+                             file.path(RTKLIB_bindir, "rnx2rtkp.exe"),
+                             file.path(RTKLIB_bindir, "rnx2rtkp") )
+    if(!file.exists(RTKLIB_rnx2rtkp)){
+      warning(paste("File", RTKLIB_rnx2rtkp, "does not exist in directory ",RTKLIB_bindir, " - try again or press return to quit."))
+      setRTKLIB()
+    } 
+    Sys.setenv(RTKLIB_rnx2rtkp =  RTKLIB_rnx2rtkp )
+    return(T)
+  } else {
+    fn<- readline(prompt="Enter path to RTKLIB bin folder (i.e. where executable rnx2rtkp is located): ")
+    setRTKLIB(fn)
+  }
+   
+}
+
+
 #' rtklib.checkIsWorking
 #'
 #' @param type - see RTKLIB's RTKPOST options. Files with .conf extension.

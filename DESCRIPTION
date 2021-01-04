@@ -1,6 +1,6 @@
 Package: rRINEX
 Type: Package
-Title: Reads RINEX files
+Title: Reads RINEX Files
 Version: 0.1.1
 Authors@R: 
     c(person(given = "Francesco",
@@ -9,17 +9,17 @@ Authors@R:
              email = "francesco.pirotti@unipd.it",
              comment = c(ORCID = "0000-0002-4796-6406") ) )
 Maintainer: Francesco Pirotti <francesco.pirotti@unipd.it>
-Description: Reads RINEX data, for now only the header.
+Description: Reads RINEX observation data, hooks up with 'RTKLIB'  (<http://www.rtklib.com/>) to use rnx2rtkp executable.
 License: CC BY 4.0
-Depends: R (>= 3.5.0)
+Depends: R (>= 3.5.0) 
+Date: 2021-01-15
 Language: en-US
 Encoding: UTF-8
 LazyData: true   
 URL: https://github.com/fpirotti/rRINEX  
 BugReports: https://github.com/fpirotti/rRINEX/issues
 RoxygenNote: 7.1.1
-Imports:  
-    lattice,
+Imports: 
     sf,
     tools,
     R.utils,
@@ -30,7 +30,7 @@ Imports:
     pingr,
     RCurl,
     XML,
-    mgsub,
+    mgsub, 
     tmap
 Suggests: 
     knitr,

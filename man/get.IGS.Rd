@@ -29,7 +29,7 @@ See (\href{http://www.epncb.oma.be/_networkdata/data_access/highrate/}{http://ww
 }
 \examples{
 ## download file from 2 weeks before today from Genova's baset station
-filepath<-getFile.liguria( as.POSIXct(Sys.time() - 14*(60*60*24) ), "GENU" )
+filepath<-get.IGS( as.POSIXct(Sys.time() - 14*(60*60*24) ), "GENU" )
 print(filepath)
 file.remove(filepath)
 }
