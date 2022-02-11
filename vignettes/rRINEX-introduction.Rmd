@@ -50,6 +50,7 @@ The reference to some example  RINEX files.
 
 ```{r  message=F}
 ef<-rRINEX::paths.to.example.files()
+ef<-"/archivio/cirgeoGNSSrinex_bot/Download/189140783_M__data_20201211_105001.zip"
 print(ef)
 ```
 
@@ -61,6 +62,8 @@ RINEX observation file.
 NB: --- *not* all RINEX observation files have this information.
 
 ```{r  message=F}
+ef.dec<-decompress(ef)
+ef<-list(obs.rover=ef.dec)
 info<- rRINEX::getApproxPositionFromRINEX.OBS.header(ef$obs.rover)
 print(sprintf("Long. %f and Lat. %f ", info[[1]], info[[2]] ) ) 
 ## Window buffer in degrees
@@ -80,14 +83,14 @@ NB: --- *not* all RINEX observation files have this information.
 
 ```{r comment=F, message=F, warning=F }
 rinex.info<- rRINEX::getInfoFromRINEX.OBS.header(ef$obs.rover)
-
+getFile.Veneto(rinex.info$timestamp, "XXXX")
 point<- sf::st_sfc(sf::st_point(rinex.info$latlong), crs = 9000)
 
 sf.close<-rRINEX::getClosestStations(ef$obs.rover)
-
-# tmap::tmap_mode("view")
-# tmap::tm_shape(sf.close) +
-#     tmap::tm_symbols(col="blue", scale=.99) +
-# tmap::tm_shape(point) +
-#     tmap::tm_symbols(col="red", scale=1.5)
+ 
+ tmap::tmap_mode("view")
+ tmap::tm_shape(sf.close) +
+     tmap::tm_symbols(col="blue", scale=.99) +
+ tmap::tm_shape(point) +
+     tmap::tm_symbols(col="red", scale=1.5)
 ```

@@ -55,9 +55,9 @@ getApproxPositionFromRINEX.OBS.header<-function(rinexFile, class="numeric"){
 #' rinexFile<-paths.to.example.files()[["obs.rover"]]
 #' getInfoFromRINEX.OBS.header(rinexFile)
 getInfoFromRINEX.OBS.header<-function(rinexFile){
-  lines<-readLines(rinexFile, 20 )
-  nm<-substr(lines, 61,80)
-  vv<-substr(lines, 1,60)
+  lines<- trimws(readLines(rinexFile, 20 ))
+  nm<- trimws(substr(lines, 61,80))
+  vv<- trimws(substr(lines, 1,60))
   vv<-stats::setNames(vv, nm)
   latlong<-stats::na.omit(as.numeric(strsplit(vv["APPROX POSITION XYZ"], " ")[[1]]))
 

@@ -203,7 +203,7 @@ getFile.Veneto<-function(timestamp, station, onlycheck=F){
     tolower(station), as.integer(ts$n), ts$H,
     ts$y
     )
-  
+  message(url)
   fn<-sprintf("%s%d%s.%sd.Z", tolower(station), as.integer(ts$julianDay), ts$h, ts$yearNc)
   
   isup<-pingr::is_up(url, timeout = 2)

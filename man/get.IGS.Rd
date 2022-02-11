@@ -4,17 +4,17 @@
 \alias{get.IGS}
 \title{getFile.liguria}
 \usage{
-get.IGS(timestamp, station, onlycheck = F, type = "highrate")
+get.IGS(tms, station, onlycheck = F, type = "highrate")
 }
 \arguments{
-\item{timestamp}{date and time at which the file should be searched for}
-
 \item{station}{name of station of the EUREF Region}
 
 \item{onlycheck}{(default FALSE) do not download the file, just check if it exists and 
 return TRUE or FALSE}
 
 \item{type}{either "highrate" or other}
+
+\item{timestamp}{date and time at which the file should be searched for}
 }
 \value{
 file path to downloaded observation and navigation files if download is successful,
@@ -29,6 +29,7 @@ See (\href{http://www.epncb.oma.be/_networkdata/data_access/highrate/}{http://ww
 }
 \examples{
 ## download file from 2 weeks before today from Genova's baset station
+## 
 filepath<-get.IGS( as.POSIXct(Sys.time() - 14*(60*60*24) ), "GENU" )
 print(filepath)
 file.remove(filepath)

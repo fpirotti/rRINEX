@@ -4,14 +4,14 @@
 \alias{formatURL}
 \title{formatURL}
 \usage{
-formatURL(url, timestamp, stationname = NA)
+formatURL(url, tms, stationname = NA)
 }
 \arguments{
 \item{url}{the URL string (see example)}
 
-\item{timestamp}{time of survey in RINEX file}
-
 \item{stationname}{Name of the station e.g. for Padova (Italy) station name is PADO}
+
+\item{timestamp}{time of survey in RINEX file}
 }
 \value{
 url string with substitutions of the following
