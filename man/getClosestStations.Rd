@@ -23,6 +23,6 @@ An sf object with closest stations and distances.
 Get closest permenent base station with GNSS
 }
 \examples{
-ef<-paths.to.example.files() 
+ef<-rRINEX::example.files
 getClosestStations(ef[["obs.rover"]])
 }

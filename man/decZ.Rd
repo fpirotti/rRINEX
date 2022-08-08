@@ -15,6 +15,3 @@ path to decompressed file or NULL on problem
 \description{
 Decompress .Z files (Linux only for now)
 }
-\examples{
-decZ(system.file("extdata", "pado348o.20d.Z", package = "rRINEX"))
-}

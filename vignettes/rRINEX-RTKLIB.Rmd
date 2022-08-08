@@ -2,7 +2,7 @@
 title: "rRINEX - Interaction with RTKLIB"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{rRINEX-RTKLIB}
+  %\VignetteIndexEntry{rRINEX - Interaction with RTKLIB}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

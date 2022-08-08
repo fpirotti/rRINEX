@@ -12,11 +12,7 @@ vignette: >
   \usepackage[utf8]{inputenc} 
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(collapse = T, fig.width=6, fig.height=3,
-  comment = "#>"
-) 
-```
+
   
 ## Get started  
 
@@ -24,11 +20,7 @@ You  have two choices, Italy's CORS stations, or EUREF CORS stations.
 Below is an example plotting both in red and blue respectively.
 
 
-```{r  message=F, out.width="100%" }
 
-
-
-```
 
 
 ## RTKLIB
@@ -38,7 +30,8 @@ Upon loading the library , the user will be asked to specify the path were RTKLI
 It is strongly advised that you install  [RTKLIB](http://www.rtklib.com){target=_blank} to use all of the functionalities of rRINEX.  
 
 
-```{r setup }
+
+```r
 #library(lattice)
 #library(tmap) 
 library(rRINEX)
@@ -48,9 +41,18 @@ library(rRINEX)
 
 The reference to some example  RINEX files.  
 
-```{r  message=F}
+
+```r
 ef<-rRINEX::example.files
 print(ef)
+#> $obs.rover
+#> [1] "/usr/local/lib/R/site-library/rRINEX/extdata/example.20o"
+#> 
+#> $nav
+#> [1] "/usr/local/lib/R/site-library/rRINEX/extdata/example.20o"
+#> 
+#> $obs.base
+#> [1] "/usr/local/lib/R/site-library/rRINEX/extdata/example.20o"
 ```
 
 ### Get and plot approximate  position of survey from RINEX file  
@@ -60,7 +62,8 @@ RINEX observation file.
 
 NB: --- *not* all RINEX observation files have this information.
 
-```{r  message=F}
+
+```r
 
 info<- rRINEX::getApproxPositionFromRINEX.OBS.header(ef$obs.rover)
 if(is.na(info)){
@@ -73,7 +76,9 @@ if(is.na(info)){
 #                                   right = info[[1]]+buffer, top = info[[2]] + buffer), zoom=14)
 #  
 }
-
+#> Warning in if (is.na(info)) {: the condition has length > 1 and only the first
+#> element will be used
+#> [1] "Long. 11.933910 and Lat. 45.672808 "
 ```
 
 
@@ -84,7 +89,8 @@ RINEX observation file.
 
 NB: --- *not* all RINEX observation files have this information.
 
-```{r comment=F, message=F, warning=F }
+
+```r
 # rinex.info<- rRINEX::getInfoFromRINEX.OBS.header(ef$obs.rover)
 # getFile.Veneto(rinex.info$timestamp, "PADO")
 # point<- sf::st_sfc(sf::st_point(rinex.info$latlong), crs = 9000)

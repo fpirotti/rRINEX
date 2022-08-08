@@ -18,7 +18,7 @@ latlong values as \code{numeric} c(longitude, latitude) or \code{sf}  objects
 Get approximate position ONLY if is in the header of the RINEX observation file
 }
 \examples{
-rinexFile<-paths.to.example.files()[["obs.rover"]]
+rinexFile<-rRINEX::example.files[["obs.rover"]]
 pos<-getApproxPositionFromRINEX.OBS.header(rinexFile)
 print(pos)
 pos<-getApproxPositionFromRINEX.OBS.header(rinexFile, "sf")

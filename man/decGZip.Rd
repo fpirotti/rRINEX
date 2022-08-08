@@ -2,7 +2,7 @@
 % Please edit documentation in R/decompress.R
 \name{decGZip}
 \alias{decGZip}
-\title{decGZip}
+\title{decompress Gzip files}
 \usage{
 decGZip(filepath)
 }
@@ -13,5 +13,5 @@ decGZip(filepath)
 path to decompressed file or NULL on error
 }
 \description{
-decGZip
+decompress Gzip files
 }

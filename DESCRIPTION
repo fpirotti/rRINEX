@@ -10,7 +10,7 @@ Authors@R:
              comment = c(ORCID = "0000-0002-4796-6406") ) )
 Maintainer: Francesco Pirotti <francesco.pirotti@unipd.it>
 Description: Reads RINEX observation data, hooks up with 'RTKLIB'  (<http://www.rtklib.com/>) to use rnx2rtkp executable.
-License: CC BY 4.0
+License: MIT + file LICENSE
 Depends: R (>= 3.5.0) 
 Date: 2021-01-15
 Language: en-US
@@ -18,7 +18,7 @@ Encoding: UTF-8
 LazyData: true   
 URL: https://github.com/fpirotti/rRINEX  
 BugReports: https://github.com/fpirotti/rRINEX/issues
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0
 Imports: 
     sf,
     tools,

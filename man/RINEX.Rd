@@ -15,7 +15,7 @@ to open and process RINEX files. Was tested in Linux, not tested in Windows,
 please send feedback
 }
 \examples{
-rinex.file.path<-system.file("extdata", "example.20o", package = "rRINEX")
-rinex.obj<-RINEX(rinex.file.path) 
+#rinex.file.path<-system.file("extdata", "example.20o", package = "rRINEX")
+#rinex.obj<-RINEX(rinex.file.path) 
 }
 \keyword{RINEX}

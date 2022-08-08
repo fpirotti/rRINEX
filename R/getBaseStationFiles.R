@@ -38,31 +38,35 @@ timestamp2parts<-function(timestamp){
 #' formatURL
 #'
 #' @param url the URL string (see example)
-#' @param timestamp time of survey in RINEX file
+#' @param tms time of survey in RINEX file
 #' @param stationname Name of the station e.g. for Padova (Italy) station name is PADO 
 #'
 #' @return url string with substitutions of the following
 #' @export
 #'
 #' @examples   
-#' url<-"ftps://gdc.cddis.eosdis.nasa.gov/gps/data/campaign/mgex/hourly/rinex3/%n/%h/%s%n%H.%yd.Z"
-#' formatURL(url, (Sys.time() - 14*60*60*24) )
+#' url<-"ftp://gdc.cddis.eosdis.nasa.gov/gps/data/campaign/mgex/hourly/rinex3/%n/%h/%s%n%H.%yd.Z"
+#' formatURL(url, Sys.time(), "PADO" )
 #' 
 formatURL<-function(url, tms, stationname=NA){
   
   nn <- timestamp2parts(tms)
-  
+  if(is.na(stationname) ){
+    warning("Station name missing. Stopping here")
+    return(NULL)
+  }
   if(!is.na(stationname) ) {
     
     if(nchar(stationname)!=4){
-      warning("Station name should be 4 characters. \"", stationname, "\" (", nchar(stationname), " characters) were found.")
+      warning("Station name should be 4 characters. \"", stationname, "\" (", nchar(stationname), " characters) were found. Stopping here")
+      return(NULL)
     }
     
     nn <- c(nn, s=tolower(stationname), S=toupper(stationname), r=stationname )
-    toMatch <- sprintf("%%%s",  names(nn)  )
     
-  }
+  } 
   
+  toMatch <- sprintf("%%%s",  names(nn)  )
   url<-mgsub::mgsub(string = url, pattern = toMatch, replacement = unlist(nn) )
   
   ww<-which(strsplit(url, "")[[1]]=="%")
@@ -82,7 +86,7 @@ formatURL<-function(url, tms, stationname=NA){
 #' See (\href{http://www.epncb.oma.be/_networkdata/data_access/highrate/}{http://www.epncb.oma.be/_networkdata/data_access/highrate/})
 #' 
 #'
-#' @param timestamp date and time at which the file should be searched for
+#' @param tms date and time at which the file should be searched for
 #' @param station name of station of the EUREF Region
 #' @param onlycheck (default FALSE) do not download the file, just check if it exists and 
 #' return TRUE or FALSE
@@ -96,31 +100,30 @@ formatURL<-function(url, tms, stationname=NA){
 #' ## 
 #' filepath<-get.IGS( as.POSIXct(Sys.time() - 14*(60*60*24) ), "GENU" )
 #' print(filepath)
-#' file.remove(filepath)
+#' if(is.character(filepath)) file.remove(filepath)
 get.IGS<-function(tms, station, onlycheck=F, type="highrate"){
-  
-   
   
   base<-"igs.bkg.bund.de"
   
-  url.string<-"https://igs.bkg.bund.de/root_ftp/IGS/highrate/%Y/%n/%H/%S00"
+  url.string<-paste0("https://",base,"/root_ftp/IGS/highrate/%Y/%n/%H/%S00")
   url.tot<-formatURL(url.string, tms, station)
   
-  url.string<-"https://igs.bkg.bund.de/root_ftp/IGS/highrate/%Y/%n/%H"
+  url.string<- paste0("https://",base,"/root_ftp/IGS/highrate/%Y/%n/%H/")
   url.base<-formatURL(url.string, tms, station)
 
-  isup <- pingr::is_up(url.base)  && RCurl::url.exists(url.base)
+  isup <- pingr::is_up(base)  && RCurl::url.exists(url.base)
   
   if(onlycheck) return(isup)
-  else if (!onlycheck && !isup) return(F) 
+  else if (!onlycheck && !isup) return(FALSE) 
   
-  result <- RCurl::getURL(url,verbose=F,
-                          ftp.use.epsv=TRUE, dirlistonly = TRUE)
+  result <- RCurl::getURL(url.base, verbose=FALSE,
+                          ftp.use.epsv=TRUE, 
+                          dirlistonly = TRUE)
+  
   htmlinks<-XML::getHTMLLinks(result)
-  
-  grep(sprintf("^%s", station), htmlinks)
-  
-  grep(sprintf("ITA_"), htmlinks, value = T)
+  htmlinks
+  # grep(sprintf("^%s", station), htmlinks)
+  # grep(sprintf("ITA_"), htmlinks, value = T)
   
 }
 
@@ -145,7 +148,7 @@ get.IGS<-function(tms, station, onlycheck=F, type="highrate"){
 #' ## download file from 2 weeks before today from Genova's baset station
 #' filepath<-getFile.liguria( as.POSIXct(Sys.time() - 14*(60*60*24) ), "GENU" )
 #' print(filepath)
-#' file.remove(filepath)
+#' if(is.character(filepath)) file.remove(filepath)
 getFile.liguria<-function(timestamp, station, onlycheck=F){
   
   ts<-timestamp2parts(timestamp) 
@@ -243,7 +246,7 @@ getFile.Veneto<-function(timestamp, station, onlycheck=F){
 #' @export
 #' 
 #' @examples 
-#' ef<-paths.to.example.files() 
+#' ef<-rRINEX::example.files
 #' getClosestStations(ef[["obs.rover"]])
 getClosestStations<-function(rinexFile, nStations=3){
   
@@ -304,7 +307,7 @@ getClosestStations<-function(rinexFile, nStations=3){
 #' 
 #' @export
 #' @examples 
-#'  ef<-paths.to.example.files() 
+#'  ef<-rRINEX::example.files
 #'  ## plotClosestStation(ef$obs.rover)
 plotClosestStations<-function(rinexFile, nStations=3, interactive=F){
   point<- rRINEX::getApproxPositionFromRINEX.OBS.header(rinexFile, class="sf") 

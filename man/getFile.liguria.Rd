@@ -28,5 +28,5 @@ See (\href{http://gnss.regione.liguria.it/}{http://gnss.regione.liguria.it/})
 ## download file from 2 weeks before today from Genova's baset station
 filepath<-getFile.liguria( as.POSIXct(Sys.time() - 14*(60*60*24) ), "GENU" )
 print(filepath)
-file.remove(filepath)
+if(is.character(filepath)) file.remove(filepath)
 }

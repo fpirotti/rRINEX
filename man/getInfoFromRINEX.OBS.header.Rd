@@ -20,6 +20,6 @@ A list with coordinates and timestamp.
 Get time and space information from RINEX Observaton file
 }
 \examples{
-rinexFile<-paths.to.example.files()[["obs.rover"]]
+rinexFile<-rRINEX::example.files[["obs.rover"]]
 getInfoFromRINEX.OBS.header(rinexFile)
 }

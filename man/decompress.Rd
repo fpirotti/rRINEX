@@ -2,7 +2,7 @@
 % Please edit documentation in R/decompress.R
 \name{decompress}
 \alias{decompress}
-\title{Decompress}
+\title{decompress  files}
 \usage{
 decompress(filepath)
 }
@@ -13,5 +13,5 @@ decompress(filepath)
 path to decompressed file or NULL on error
 }
 \description{
-Decompress .Z or .gz files
+Decompress .ZIP, .Z or .gz files
 }

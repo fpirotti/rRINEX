@@ -1,6 +1,3 @@
-library("tools")
-library("R.utils")
-
 #' @name crx2rnx
 #' @title  Decompress Hatanaka-compressed RINEX format    
 #' @description Decompress Hatanaka-compressed RINEX format.    
@@ -24,7 +21,7 @@ library("R.utils")
 #' @export
 #' 
 #' @examples
-#' ef<-paths.to.example.files()  
+#' ef<-rRINEX::example.files  
 #' crx2rnx(ef$obs.rover)
 #' 
 crx2rnx<-function(filepath){
@@ -70,16 +67,12 @@ crx2rnx<-function(filepath){
 
 
 
-
-#' Decompress .Z files (Linux only for now)
-#'
+#' @name decZ
+#' @title  Decompress .Z files (Linux only for now) 
 #'
 #' @param filepath path of file to be decompressed
 #'
 #' @return path to decompressed file or NULL on problem
-#' @export
-#'
-#' @examples decZ(system.file("extdata", "pado348o.20d.Z", package = "rRINEX"))
 decZ<-function(filepath){
   if(!file.exists(filepath)){
     warning("File ", filepath, " does not exist") 
@@ -108,12 +101,11 @@ decZ<-function(filepath){
 }
 
 
-#' decGZip
-#'
+#' @name  decGZip
+#' @title  decompress Gzip files
 #' @param filepath path of file to be decompressed
 #'
 #' @return path to decompressed file or NULL on error
-#' @export 
 decGZip<-function(filepath){
   if(!file.exists(filepath)){
     warning("File ", filepath, " does not exist") 
@@ -134,13 +126,12 @@ decGZip<-function(filepath){
 
 
 
-#' decZip
+#' @name decZip
 #' @title Unzip files and return RINEX files in ZIP archive
 #' @description  Unzip files and return a character vector with names of RINEX files
 #' @param filepath path of file to be decompressed
 #'
 #' @return character vector with names of RINEX files or NULL on error or on missing RINEX files
-#' @export 
 decZip<-function(filepath){
   file.extension<- tools::file_ext(filepath)
   if(toupper(file.extension)=="ZIP"){
@@ -168,8 +159,9 @@ decZip<-function(filepath){
 }
 
 
-#' Decompress
-#' @description  Decompress .Z or .gz files
+#' @name  decompress
+#' @title  decompress  files
+#' @description  Decompress .ZIP, .Z or .gz files
 #' @param filepath path of file to be decompressed
 #'
 #' @return path to decompressed file or NULL on error
@@ -185,15 +177,18 @@ decompress<-function(filepath){
   
   if(toupper(file.extension[[1]])=="ZIP"){
     filepath<- decZip(filepath)
+    message("Decompressing ZIPPED file")
   }
   
   file.extension<- tools::file_ext(filepath)
   
   if(toupper(file.extension[[1]])=="GZ"){
     filepath<- decGZip(filepath)
+    message("Decompressing GZ file")
   }
   if(toupper(file.extension)=="Z"){
     filepath<- decZ(filepath)
+    message("Decompressing Z file")
   }
   filepath
 }

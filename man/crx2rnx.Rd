@@ -20,7 +20,7 @@ Original C code is from https://terras.gsi.go.jp/ja/crx2rnx.html
 Please check license
 }
 \examples{
-ef<-paths.to.example.files()  
+ef<-rRINEX::example.files  
 crx2rnx(ef$obs.rover)
 
 }

@@ -42,10 +42,8 @@
 #' @description   Some example files
 #'
 #' @docType data
-#'
-#' @usage  paths.to.example.files()
-#'
-#' @return A list with information on some examples RINEX files.
+#'  
+#' @format A list with information on some examples RINEX files.
 #' \itemize{
 #'   \item obs.rover exampleRover.20o a RINEX 3.01 format file 
 #'   \item nav       exampleNav.20o a RINEX 3.01 format file 
@@ -58,15 +56,8 @@
 #' @export
 #' 
 #' @examples
-#' paths.to.example.files() 
+#' print(rRINEX::example.files)
 #'
 #' 
-paths.to.example.files<-function(){
-  
- list(  obs.rover=system.file("extdata", "example.20o", package = "rRINEX"),
-        nav=system.file("extdata", "example.20o", package = "rRINEX"),
-        obs.base=system.file("extdata", "example.20o", package = "rRINEX")
- )
-}
-
+"example.files"
 

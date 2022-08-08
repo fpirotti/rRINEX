@@ -8,8 +8,8 @@
 #' @keywords RINEX
 #' @export
 #' @examples
-#' rinex.file.path<-system.file("extdata", "example.20o", package = "rRINEX")
-#' rinex.obj<-RINEX(rinex.file.path) 
+#' #rinex.file.path<-system.file("extdata", "example.20o", package = "rRINEX")
+#' #rinex.obj<-RINEX(rinex.file.path) 
 RINEX<-function(filepath)
 { 
   

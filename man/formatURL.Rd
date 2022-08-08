@@ -9,9 +9,9 @@ formatURL(url, tms, stationname = NA)
 \arguments{
 \item{url}{the URL string (see example)}
 
-\item{stationname}{Name of the station e.g. for Padova (Italy) station name is PADO}
+\item{tms}{time of survey in RINEX file}
 
-\item{timestamp}{time of survey in RINEX file}
+\item{stationname}{Name of the station e.g. for Padova (Italy) station name is PADO}
 }
 \value{
 url string with substitutions of the following
@@ -21,7 +21,7 @@ formatURL
 }
 \examples{
   
-url<-"ftps://gdc.cddis.eosdis.nasa.gov/gps/data/campaign/mgex/hourly/rinex3/\%n/\%h/\%s\%n\%H.\%yd.Z"
-formatURL(url, (Sys.time() - 14*60*60*24) )
+url<-"ftp://gdc.cddis.eosdis.nasa.gov/gps/data/campaign/mgex/hourly/rinex3/\%n/\%h/\%s\%n\%H.\%yd.Z"
+formatURL(url, Sys.time(), "PADO" )
 
 }

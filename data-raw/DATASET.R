@@ -1,7 +1,7 @@
 ## code to prepare `DATASET` dataset goes here
 ######### STAZIONI ITA --------
 
-stazioni <- read.table("a.csv")
+stazioni <- read.table("data-raw/a.csv")
 
 
 
@@ -38,6 +38,10 @@ stazioniGNSS.IGSNetwork<-sf::st_as_sf(df, coords=c("x","y"), crs=9000  )
 
 stazioniGNSS<-list(IGSNetwork=stazioniGNSS.IGSNetwork, 
                    ITA=stazioniGNSS.ITA)
+example.files<- list(  obs.rover=system.file("extdata", "example.20o", package = "rRINEX"),
+                                nav=system.file("extdata", "example.20o", package = "rRINEX"),
+                                obs.base=system.file("extdata", "example.20o", package = "rRINEX")
+)
+usethis::use_data(stazioniGNSS, example.files, internal=T, overwrite = TRUE)
 
-usethis::use_data(stazioniGNSS, internal=T, overwrite = TRUE)
 

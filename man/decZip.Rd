@@ -15,6 +15,3 @@ character vector with names of RINEX files or NULL on error or on missing RINEX 
 \description{
 Unzip files and return a character vector with names of RINEX files
 }
-\details{
-decZip
-}

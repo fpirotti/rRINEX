@@ -20,6 +20,6 @@ Shows interactive or static map of points.
 Show closest GNSS stations in mapview
 }
 \examples{
- ef<-paths.to.example.files() 
+ ef<-rRINEX::example.files
  ## plotClosestStation(ef$obs.rover)
 }
