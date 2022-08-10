@@ -2,13 +2,13 @@
 % Please edit documentation in R/rio.R
 \name{first_nonblank_line}
 \alias{first_nonblank_line}
-\title{first_nonblank_line   
+\title{first_nonblank_line
  Return first non-blank 80 character line in file}
 \usage{
 first_nonblank_line(f, max_lines = 10)
 }
 \arguments{
-\item{f}{path to file that is Hatanaka-compressed RINEX format}
+\item{f}{file connection to file the you want to read}
 
 \item{max_lines, }{INTEGER, maximum number of blank lines}
 }
@@ -16,7 +16,7 @@ first_nonblank_line(f, max_lines = 10)
 FIRST NON BLANK LINE IN RINEX
 }
 \description{
-first_nonblank_line   
+first_nonblank_line
  Return first non-blank 80 character line in file
 }
 \examples{

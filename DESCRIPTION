@@ -30,8 +30,11 @@ Imports:
     pingr,
     RCurl,
     XML,
-    mgsub, 
-    tmap
+    mgsub,
+    tmap,
+    tidync,
+    RNetCDF,
+    readr
 Suggests: 
     knitr,
     rmarkdown

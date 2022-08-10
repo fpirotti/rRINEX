@@ -11,7 +11,6 @@ A list with information on some examples RINEX files.
   \item obs.rover exampleRover.20o a RINEX 3.01 format file 
   \item nav       exampleNav.20o a RINEX 3.01 format file 
   \item obs.base  exampleObsBaseStation.20o a RINEX 3.01 format file 
-  
 }
 }
 \usage{

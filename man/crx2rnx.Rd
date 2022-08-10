@@ -21,7 +21,7 @@ Please check license
 }
 \examples{
 ef<-rRINEX::example.files  
-crx2rnx(ef$obs.rover)
+crx2rnx(ef$obs2.base)
 
 }
 \references{

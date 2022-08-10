@@ -12,6 +12,3 @@ The operating system: one of "windows", "linux", "osx" or "solaris"
 \description{
 The operating system name
 }
-\examples{
-get_os()
-}

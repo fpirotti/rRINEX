@@ -12,6 +12,3 @@ The operating system 64 or 32 bits as integer
 \description{
 Get number of bits in your system architecture
 }
-\examples{
-get_bits()
-}

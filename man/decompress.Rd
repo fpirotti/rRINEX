@@ -4,10 +4,12 @@
 \alias{decompress}
 \title{decompress  files}
 \usage{
-decompress(filepath)
+decompress(filepath, verbose = FALSE)
 }
 \arguments{
 \item{filepath}{path of file to be decompressed}
+
+\item{verbose}{boolean, DEFAULT FALSE  to output extra messages}
 }
 \value{
 path to decompressed file or NULL on error

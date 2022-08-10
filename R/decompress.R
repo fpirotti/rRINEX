@@ -22,7 +22,7 @@
 #' 
 #' @examples
 #' ef<-rRINEX::example.files  
-#' crx2rnx(ef$obs.rover)
+#' crx2rnx(ef$obs2.base)
 #' 
 crx2rnx<-function(filepath){
   if(is.null(filepath) || !file.exists(filepath)){
@@ -138,9 +138,7 @@ decZip<-function(filepath){
     message("Found ZIP file, will uncompress and try to find a file with any of 
             the following extensions:
             YYo, YYn, YYd, .Z, or .gz and further process any of them")
-    filepaths<- utils::unzip(filepath,list = T)
-    
-    
+    filepaths<- utils::unzip(filepath,list = TRUE)
     filepaths.keep<- file.path(dirname(filepath),
                                grep("(\\.[0-9][0-9][gGdDoOzZnN]$|\\.crx$|\\.Z$|\\.gz$)", 
                                     filepaths$Name, value = T, ignore.case = T ) )
@@ -163,33 +161,49 @@ decZip<-function(filepath){
 #' @title  decompress  files
 #' @description  Decompress .ZIP, .Z or .gz files
 #' @param filepath path of file to be decompressed
+#' @param verbose boolean, DEFAULT FALSE  to output extra messages
 #'
 #' @return path to decompressed file or NULL on error
 #' @export 
-decompress<-function(filepath){
-  if(!file.exists(filepath)){
-    warning("File ", filepath, " does not exist") 
+decompress<-function(filepath, verbose=FALSE){
+  
+  filepathFull <- filepath
+  if(!file.exists(filepathFull)){
+    warning("File ", filepathFull, " does not exist") 
     return(NULL)
   } 
   
-  file.extension<- tools::file_ext(filepath)
-
+  file.extension<- tools::file_ext(filepathFull)
+  dirpath <- dirname(filepathFull)
   
   if(toupper(file.extension[[1]])=="ZIP"){
-    filepath<- decZip(filepath)
-    message("Decompressing ZIPPED file")
+    filepathFull<- decZip(filepathFull)
+    if(verbose)   message("Decompressing ZIPPED file")
   }
   
-  file.extension<- tools::file_ext(filepath)
+  file.extension<- tools::file_ext(filepathFull)
   
   if(toupper(file.extension[[1]])=="GZ"){
-    filepath<- decGZip(filepath)
-    message("Decompressing GZ file")
+    filepathFull<- decGZip(filepathFull)
+    if(verbose)   message("Decompressing GZ file")
   }
-  if(toupper(file.extension)=="Z"){
-    filepath<- decZ(filepath)
-    message("Decompressing Z file")
+  
+  file.extension<- tools::file_ext(filepathFull)
+  
+  if(toupper(file.extension[[1]])=="TAR"){
+    if(verbose)   message("Decompressing TAR archive")
+    filepathFull22 <- utils::untar(tarfile = filepathFull, list = TRUE)
+    tt <-  utils::untar(tarfile = filepathFull, exdir=dirpath )
+    filepathFull <-  file.path(dirpath, filepathFull22)
   }
-  filepath
-}
+  
+  file.extension<- tools::file_ext(filepathFull)
+  
+  if(length(filepathFull)>1){
+    message(length(filepathFull), " files found!")
+  }
+  filepath2 <- file.path(dirpath, basename(filepathFull) )
+  if(verbose) message("Decompression resulted in following files:\n", paste(filepath2))  
+  filepath2
 
+}

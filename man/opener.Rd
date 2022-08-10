@@ -4,15 +4,17 @@
 \alias{opener}
 \title{Decompress Hatanaka-compressed RINEX format}
 \usage{
-opener(f = NULL, header = FALSE)
+opener(f = NULL, header = FALSE, verbose = FALSE)
 }
 \arguments{
-\item{f}{file path to file that is RINEX format}
+\item{f}{path to file that is RINEX format}
 
-\item{header}{read also head in  RINEX format}
+\item{header}{boolean,  DEFAULT FALSE  read also head in  RINEX format}
+
+\item{verbose}{boolean, DEFAULT FALSE  to output extra messages}
 }
 \value{
-ASCII data with RINEX info
+A connection in read-only mode to RINEX file
 }
 \description{
 Decompress Hatanaka-compressed RINEX format.
