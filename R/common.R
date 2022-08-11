@@ -106,3 +106,25 @@ isTruthy <- function(x) {
   
   return(TRUE)
 }
+
+
+
+#' cartesian2geographic
+#' @description converts Cartesian coordinates to Spherical coordinates
+#' in WGS84 datum 
+#' @param x numeric, X coordinate
+#' @param y numeric, Y coordinate
+#' @param z numeric, Z coordinate
+#'
+#' @return longitude and latitude and ellipsoid height e.g. c(long=3, lat=45.6, h=44)
+#' @export
+#'
+#' @examples
+#' cartesian2geographic(-1079348.2174506688, 6121287.922664762, 1425405.2088229598 )
+cartesian2geographic <- function(x,y,z){
+  r = sqrt(x*x + y*y + z*z)
+  h = r -  6378137 
+  long <- atan2(y, x) * 360 / (2*pi) 
+  lat =  asin(z / r) * 360 / (2*pi) 
+  return(c(long=long, lat=lat, h=h))
+}

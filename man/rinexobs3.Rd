@@ -2,7 +2,7 @@
 % Please edit documentation in R/obs3.R
 \name{rinexobs3}
 \alias{rinexobs3}
-\title{Title}
+\title{rinexobs3}
 \usage{
 rinexobs3(
   f,
@@ -41,7 +41,7 @@ Useful to speed up reading of very large RINEX files}
 HDF array???
 }
 \description{
-Title
+rinexobs3
 }
 \examples{
 f <- rRINEX::example.files$obs.crx.rover

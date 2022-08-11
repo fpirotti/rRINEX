@@ -107,7 +107,7 @@ rinexobs3<-function(
         }
       }
     }
-    # data <- epoch(data, raw, hdr, time, sv, useindicators, verbose)
+    data <- epoch(data, raw, hdr, time, sv, useindicators, verbose)
    }
   )
 } 
@@ -136,8 +136,9 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
   Fmax <- 0
   seek(f, 0)
   hdr <- rinexinfo(f)
-  hdr[["hasPositionXYZ"]]<-FALSE
-  hdr[["sepIsComma"]]<-FALSE
+  hdr[["APPROX.POSITION.XYZ"]]<-NA
+  hdr[["TIME.OF.FIRST.OBS"]]<-NA
+  hdr[["sep"]]<-'.'
   # lines <- readLines(f,  1, skipNul =  TRUE)
   # lines <- lines[-1]
   addsys <- FALSE
@@ -156,25 +157,94 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
     
     hd = substr(ln,61,80)
     cc = substr(ln,1,60)
-    
+    # cc<-"  2022    08    08    05    49   39,0130000     GPS         "
+    if (grepl("TIME OF FIRST OBS", ln, fixed = TRUE)) {
+      timeFirstObs <- tryCatch(
+         scan(
+          text = cc,
+          what = list(
+            year = integer(),
+            month = integer(),
+            day = integer(),
+            hour = integer(),
+            minute = integer(),
+            second = numeric(),
+            TT = character()
+          ),
+          quiet = TRUE,
+          dec = hdr[["sep"]],
+          nmax = 1
+        ),
+        error = function(e) {
+          if (hdr[["sep"]] == ".") {
+            hdr[["sep"]] <<- ","
+          } else {
+            hdr[["sep"]] <<- "."
+          }
+          tryCatch(
+            scan(
+              text = cc,
+              what = list(
+                year = integer(),
+                month = integer(),
+                day = integer(),
+                hour = integer(),
+                minute = integer(),
+                second = numeric(),
+                TT = character()
+              ),
+              quiet = TRUE,
+              dec = hdr[["sep"]],
+              nmax = 1
+            ),
+            error = function(e) {
+              message("Cannot decode time of first obs from line\n", ln)
+              NULL
+            }
+          ) 
+        }
+      )
+      
+      if(is.null(timeFirstObs)) {
+        break
+      } 
+      
+      if(timeFirstObs$TT=="GLO") timeFirstObs$TT<-"UTC"
+      
+      hdr[["TIME.OF.FIRST.OBS"]] <- ISOdate(timeFirstObs$year, 
+                                         timeFirstObs$month,
+                                         timeFirstObs$day,
+                                         timeFirstObs$hour,
+                                         timeFirstObs$minute,
+                                         timeFirstObs$second,
+                                         tz=timeFirstObs$TT)
+    }
     if(grepl("APPROX POSITION XYZ", ln, fixed=TRUE)){
-      coords <- tryCatch( scan(text=cc, what = numeric(), quiet=TRUE, dec = "."),
+      coords <- tryCatch( scan(text=cc, what = numeric(), quiet=TRUE, dec = hdr[["sep"]]),
                           error=function(e){ 
                             NULL
                           })
       ## WTF comma as separator???
       if(is.null(coords)) {
-        hdr[["sepIsComma"]]<-TRUE
-        coords <- tryCatch( scan(text=cc, what = numeric(), quiet=TRUE, dec = ","),
+        if (hdr[["sep"]] == ".") {
+          hdr[["sep"]] <<- ","
+        } else {
+          hdr[["sep"]] <<- "."
+        }
+        coords <- tryCatch( scan(text=cc, what = numeric(), quiet=TRUE, dec = hdr[["sep"]]),
                           error=function(e){ 
                             message(e)
                           })
       }      
       if(!is.null(coords)){
-        if(!all(coords==0)){
-          hdr[["hasPositionXYZ"]]<-TRUE
-          hdr[["XYZ"]]<-coords
+        if(!all(coords==0)){ 
+          hdr[["APPROX.POSITION.XYZ"]]<-coords
+          hdr[["APPROX.POSITION.LATLONG"]]<- cartesian2geographic(coords2 )
+        } else { 
+          if(verbose) message("approximage xyz position is zero \n", ln)
         }
+      } else {
+        message("Cannot decode coordinates of start position from line\n", ln)
       }
     }
     
@@ -207,13 +277,10 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
  
     
   }
-  
-  t0s <- hdr["TIME OF FIRST OBS"][[1]]
-  if(!is.null(t0s)){
-    z <- strsplit(t0s, " ")[[1]] 
-    z<-z[z!=""]
-    tz <- ifelse(z[[length(z)]]=="GPS", "UTC", z[[length(z)]])
-    hdr[["t0"]] <- as.POSIXct(t0s, format="%Y %m %d %H %M %OS", tz=tz)
+  # browser()
+ 
+  if(!is.na(hdr[["TIME.OF.FIRST.OBS"]][[1]])){
+    hdr[["t0"]] <- hdr[["TIME.OF.FIRST.OBS"]][[1]]
   }
   if(!is.null(hdr[["INTERVAL"]]) ){
     hdr[["INTERVAL"]] <- as.numeric(substr(hdr[["INTERVAL"]][[1]], 1, 10) )
@@ -259,13 +326,11 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
 #' @param useindicators 
 #' @param verbose 
 #'
-#' @return
+#' @return parsed epoch
 #' @export
 #'
 #' @examples
+#' #
 epoch <- function(data, raw, hdr, time, sv, useindicators, verbose){
-  darr = np.atleast_2d(
-    np.genfromtxt(io.BytesIO(raw.encode("ascii")), 
-                  delimiter=(14, 1, 1) * hdr["Fmax"])
-  )
+ browser()
 }

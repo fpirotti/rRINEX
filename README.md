@@ -7,7 +7,9 @@
 <!-- badges: end -->
 
 The goal of rRINEX is to provide simple tools to analyse your RINEX
-observation files.
+observation files and create plots.
+
+Some advantages is that it can use parallel reading of large files.
 
 It tries to interface with
 <a href="http://www.rtklib.com" target="_blank"><em>RTKLIB</em></a> , so
