@@ -4,7 +4,12 @@
 # rRINEX
 
 <!-- badges: start -->
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
+
+## STILL BEING DEVELOPED, NOT YET OPERATIONAL
 
 The goal of rRINEX is to provide simple tools to analyse your RINEX
 observation files and create plots.
