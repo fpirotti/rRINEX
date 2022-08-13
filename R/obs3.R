@@ -8,7 +8,8 @@ BEIDOU <- 0
 
 
 #' rinexobs3
-#'
+#' @description from [http://acc.igs.org/misc/rinex304.pdf](http://acc.igs.org/misc/rinex304.pdf)
+#' decodes RINEX 3.04 version files and creates a NetCDF or data.table
 #' @param f RINEX OBS 3 filename
 #' @param use character vector, single value, e.g. 'G'  
 #' or many values, e.g. c('G', 'R') see 
@@ -22,12 +23,15 @@ BEIDOU <- 0
 #' @param verbose boolean, DEFAULT FALSE,    output extra messages
 #' @param interval allows decimating file read by time e.g. every 5 seconds.
 #'  Useful to speed up reading of very large RINEX files
+#' @param udt  boolean, DEFAULT FALSE,   stands for use data.table - this creates and object 
+#' NOT of NetCDF but of a long table with columns - easier to understand for some
 #'
-#' @return HDF array???
+#' @return HDF5 array or data.table object if udt=TRUE
 #' @export
 #'
 #' @examples
 #' f <- rRINEX::example.files$obs.crx.rover
+#' f <- "data-raw/BZRG00ITA_S_20203461015_15M_01S_MO.rnx"
 #' rinexobs3(f, verbose=TRUE, tlim1=Sys.time(), tlim2=NA)
 rinexobs3<-function(
   f,
@@ -37,18 +41,17 @@ rinexobs3<-function(
   useindicators = FALSE,
   meas = NA,
   verbose = FALSE,
-  interval = .0 ){
+  interval = .0,
+  udt = FALSE){
   
   interval <- check_time_interval(interval)
-  tempfile<-tempfile(fileext = ".nc")
-  nc<-RNetCDF::create.nc(filename = tempfile, persist = TRUE)
-  
+
   # if(!is.null(tlim1) && !is.null(tlim2)){
   #   interval <- make_time_interval(tlim1, tlim2)
   # } else {
   #   interval <- NULL
   # }
-  
+  close(oo)
   oo<-opener(f)
   if(is.null(oo) || !inherits(oo, "file") || 
      !tryCatch(isOpen(oo), error=function(e){ FALSE }) ){
@@ -57,33 +60,68 @@ rinexobs3<-function(
   }
   
   hdr <- obsheader3(oo, use=use, meas=meas, verbose=verbose)
+  tt<-initializeNetCDF()
+  dataArray<-tt$netcdf
+  
+  
+  RNetCDF::dim.def.nc(dataArray, "sv", dimlength = length(unlist(hdr$fields)))    
+  RNetCDF::var.def.nc(dataArray, "sv", "NC_CHAR", "sv")  
+  RNetCDF::att.put.nc(dataArray, "sv", "long_name", "NC_CHAR", "unitless")
+  RNetCDF::att.put.nc(dataArray, "sv", "unit", "NC_CHAR", "Satellite Vector Names")
+  
+  
+  RNetCDF::att.put.nc(dataArray, "time", "TIME_SYSTEM", "NC_CHAR", hdr$tz)
+  RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "start_timestamp", "NC_UINT64", 
+                      bit64::integer64(hdr$TIME.OF.FIRST.OBS))
+  
+  RNetCDF::close.nc(dataArray)
+  # dataArray <- RNetCDF::open.nc(tt$path2file, write = TRUE)
   
   ## here we initialize the vector 
   ## for better performance
   time_offset <- c()
-  seek(oo)
+  obsList <- list()
+  starts <- seek(oo)
   bench::bench_time(
-  while(TRUE){
-    ln <- readLines(oo, 1)
-    if(!isTruthy(ln) || substr(ln, 1, 1)!=">"){
+   while(TRUE){
+
+    epochHeader <- scan(
+      oo,
+      what = list(
+        cc = character(),
+        year = character(),
+        month = character(),
+        day = character(),
+        hour = character(),
+        minute = character(),
+        second = character(), 
+        flag = integer(), ## double check here, x2i1 
+        nsats = integer(), 
+        receivClockOffset = numeric() 
+      ),
+      quiet = TRUE,
+      fill = TRUE,
+      dec = hdr[["dec"]],
+      nlines = 1
+    )
+    
+    if(!is.na(epochHeader$receivClockOffset)) time_offset<-c(time_offset, offset)
+    
+    timeString <- sprintf("%s-%s-%sT%s:%s:%2.7f+00:00", 
+                          epochHeader$year, 
+                          epochHeader$month,
+                          epochHeader$day,
+                          epochHeader$hour,
+                          epochHeader$minute,
+                          as.numeric(epochHeader$second)) 
+
+    time <- nanotime::as.nanotime(timeString)
+
+    if(epochHeader$flag!=0){
+      message("Epoch flag is not 0 , not handled yet" )
       break
     }
-
-    time <- as.POSIXct(ln, format="> %Y %m %d %H %M %OS", tz="GPS" )
-    if (is.na(time)) next
     
-    offset<-as.numeric(substr(ln, 42, 56))
-    if(!is.na(offset)) time_offset<-c(time_offset, offset)
-    
-    svn<-as.integer(substr(ln, 34, 35))
-    sv <- character(svn)
-    raw <- ""
-    # Number of visible satellites this time %i3  pg. A13
-    # for(i in 1:svn){
-      ln <- readr::read_delim(oo, n_max = svn, delim = " ", col_names=FALSE ) 
-      sv[[i]] <- substr(ln,1,3)
-      raw<- paste0(raw, substr(ln,4,nchar(ln))) 
-    # }
     
     if( isTruthy(tlim1) ){
       if(time < tlim1){
@@ -107,7 +145,8 @@ rinexobs3<-function(
         }
       }
     }
-    data <- epoch(data, raw, hdr, time, sv, useindicators, verbose)
+    obsList[[timeString]] <- decodeEpochObs3(oo, epochHeader,  hdr, time, sv, useindicators, verbose)
+     
    }
   )
 } 
@@ -137,8 +176,9 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
   seek(f, 0)
   hdr <- rinexinfo(f)
   hdr[["APPROX.POSITION.XYZ"]]<-NA
+  hdr[["tz"]]<-"GPS"
   hdr[["TIME.OF.FIRST.OBS"]]<-NA
-  hdr[["sep"]]<-'.'
+  hdr[["dec"]]<-'.'
   # lines <- readLines(f,  1, skipNul =  TRUE)
   # lines <- lines[-1]
   addsys <- FALSE
@@ -172,29 +212,29 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
             TT = character()
           ),
           quiet = TRUE,
-          dec = hdr[["sep"]],
+          dec = hdr[["dec"]],
           nmax = 1
         ),
         error = function(e) {
-          if (hdr[["sep"]] == ".") {
-            hdr[["sep"]] <<- ","
+          if (hdr[["dec"]] == ".") {
+            hdr[["dec"]] <<- ","
           } else {
-            hdr[["sep"]] <<- "."
+            hdr[["dec"]] <<- "."
           }
           tryCatch(
             scan(
               text = cc,
               what = list(
-                year = integer(),
-                month = integer(),
-                day = integer(),
-                hour = integer(),
-                minute = integer(),
-                second = numeric(),
+                year = character(),
+                month = character(),
+                day = character(),
+                hour = character(),
+                minute = character(),
+                second = character(),
                 TT = character()
               ),
               quiet = TRUE,
-              dec = hdr[["sep"]],
+              dec = hdr[["dec"]],
               nmax = 1
             ),
             error = function(e) {
@@ -211,27 +251,30 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
       
       if(timeFirstObs$TT=="GLO") timeFirstObs$TT<-"UTC"
       
-      hdr[["TIME.OF.FIRST.OBS"]] <- ISOdate(timeFirstObs$year, 
-                                         timeFirstObs$month,
-                                         timeFirstObs$day,
-                                         timeFirstObs$hour,
-                                         timeFirstObs$minute,
-                                         timeFirstObs$second,
-                                         tz=timeFirstObs$TT)
+      hdr[["TIME.OF.FIRST.OBS"]] <- nanotime::as.nanotime(sprintf("%s-%s-%sT%s:%s:%2.7f+00:00", 
+                                            timeFirstObs$year, 
+                                            timeFirstObs$month,
+                                            timeFirstObs$day,
+                                            timeFirstObs$hour,
+                                            timeFirstObs$minute,
+                                            as.numeric(timeFirstObs$second)) )
+      
+      
+      hdr[["tz"]]<-timeFirstObs$TT
     }
     if(grepl("APPROX POSITION XYZ", ln, fixed=TRUE)){
-      coords <- tryCatch( scan(text=cc, what = numeric(), quiet=TRUE, dec = hdr[["sep"]]),
+      coords <- tryCatch( scan(text=cc, what = numeric(), quiet=TRUE, dec = hdr[["dec"]]),
                           error=function(e){ 
                             NULL
                           })
       ## WTF comma as separator???
       if(is.null(coords)) {
-        if (hdr[["sep"]] == ".") {
-          hdr[["sep"]] <<- ","
+        if (hdr[["dec"]] == ".") {
+          hdr[["dec"]] <<- ","
         } else {
-          hdr[["sep"]] <<- "."
+          hdr[["dec"]] <<- "."
         }
-        coords <- tryCatch( scan(text=cc, what = numeric(), quiet=TRUE, dec = hdr[["sep"]]),
+        coords <- tryCatch( scan(text=cc, what = numeric(), quiet=TRUE, dec = hdr[["dec"]]),
                           error=function(e){ 
                             message(e)
                           })
@@ -239,7 +282,7 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
       if(!is.null(coords)){
         if(!all(coords==0)){ 
           hdr[["APPROX.POSITION.XYZ"]]<-coords
-          hdr[["APPROX.POSITION.LATLONG"]]<- cartesian2geographic(coords2 )
+          hdr[["APPROX.POSITION.LATLONG"]]<- cartesian2geographic(coords )
         } else { 
           if(verbose) message("approximage xyz position is zero \n", ln)
         }
@@ -307,30 +350,51 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
         sysind[[sk]][1:(length(ind)*3) ] <- rep(ind, each=3)
       }
     }
-  }
+  } 
+  if(length(sysind)==0) sysind <- NA
   hdr[["fields"]] <- fields
   hdr[["fields_ind"]] <- sysind
   hdr[["Fmax"]] <- Fmax
+  ll<-list(satID = character() )
+  for(i in unique(unlist(hdr$fields)) ){
+    ll[[i]]<-numeric()
+  }
+  
+  hdr[["scanList"]] <- ll
   hdr
 }
 
 
-
-#' epoch
-#' @description block processing of each epoch (time step)
-#' @param data 
-#' @param raw 
-#' @param hdr 
+#' decodeEpochObs3
+#' @description block processing of each epoch chunk (time step)
+#' @param oo  connection to file that is being read  
+#' @param epochHeader header with info from epoch
+#' @param hdr header with list returning from function "obsheader3"
 #' @param time 
 #' @param sv 
 #' @param useindicators 
 #' @param verbose 
 #'
-#' @return parsed epoch
+#' @return parsed epoch as matrix with nrow=number of satellites from epochHeader
 #' @export
 #'
 #' @examples
 #' #
-epoch <- function(data, raw, hdr, time, sv, useindicators, verbose){
- browser()
+decodeEpochObs3 <- function(oo,  epochHeader, hdr, time, sv, useindicators, verbose=FALSE){
+
+  epochData <- scan(
+    oo,
+    # what = character(),
+    # sep=";" , #face separator
+    what = hdr$scanList,
+    quiet = TRUE,
+    fill = TRUE,
+    dec = hdr$dec,
+    nlines = epochHeader$nsats
+  )
+  
+  df <- matrix( unlist(epochData[-1]), nrow=epochHeader$nsats)
+  rownames(df)<- epochData$satID
+  df
+  
 }

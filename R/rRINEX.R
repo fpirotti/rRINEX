@@ -48,8 +48,16 @@ RINEX<-function(filepath)
   navsys<-c(          
       "SYS_GPS","SYS_GLO","SYS_GAL","SYS_QZS","SYS_SBS","SYS_CMP","0"
   )
-  
+ # G: GPS
+ # R: GLONASS
+ # E: Galileo
+ # J: QZSS
+ # C: BDS
+ # I: IRNSS
+ # S: SBAS payload
+ # M: Mixed 
   syscodes<-"GREJSC" # satellite system codes */
+
     
   obscodes<-"CLDS"   # obs type codes */
       

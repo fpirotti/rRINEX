@@ -24,7 +24,7 @@ Imports:
     tools,
     R.utils,
     utils,
-    stats, 
+    stats,
     lwgeom,
     pingr,
     RCurl,
@@ -33,7 +33,10 @@ Imports:
     tmap,
     tidync,
     RNetCDF,
-    readr
+    readr,
+    data.table,
+    nanotime,
+    bit64
 Suggests: 
     knitr,
     rmarkdown

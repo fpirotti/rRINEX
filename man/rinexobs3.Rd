@@ -12,7 +12,8 @@ rinexobs3(
   useindicators = FALSE,
   meas = NA,
   verbose = FALSE,
-  interval = 0
+  interval = 0,
+  udt = FALSE
 )
 }
 \arguments{
@@ -36,14 +37,19 @@ or many values, e.g. c('G', 'R') see
 
 \item{interval}{allows decimating file read by time e.g. every 5 seconds.
 Useful to speed up reading of very large RINEX files}
+
+\item{udt}{boolean, DEFAULT FALSE,   stands for use data.table - this creates and object 
+NOT of NetCDF but of a long table with columns - easier to understand for some}
 }
 \value{
-HDF array???
+HDF5 array or data.table object if udt=TRUE
 }
 \description{
-rinexobs3
+from [http://acc.igs.org/misc/rinex304.pdf](http://acc.igs.org/misc/rinex304.pdf)
+decodes RINEX 3.04 version files and creates a NetCDF or data.table
 }
 \examples{
 f <- rRINEX::example.files$obs.crx.rover
+f <- "data-raw/BZRG00ITA_S_20203461015_15M_01S_MO.rnx"
 rinexobs3(f, verbose=TRUE, tlim1=Sys.time(), tlim2=NA)
 }
