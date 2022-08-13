@@ -36,7 +36,8 @@ Imports:
     readr,
     data.table,
     nanotime,
-    bit64
+    bit64,
+    plyr
 Suggests: 
     knitr,
     rmarkdown

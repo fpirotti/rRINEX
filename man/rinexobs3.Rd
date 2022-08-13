@@ -12,7 +12,7 @@ rinexobs3(
   useindicators = FALSE,
   meas = NA,
   verbose = FALSE,
-  interval = 0,
+  interval = ".0",
   udt = FALSE
 )
 }

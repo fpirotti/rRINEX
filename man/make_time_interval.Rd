@@ -4,17 +4,15 @@
 \alias{make_time_interval}
 \title{make_time_interval}
 \usage{
-make_time_interval(time1, time2, tz = "UTC")
+make_time_interval(time1, time2)
 }
 \arguments{
 \item{time1}{POSIXlt date/time object}
 
 \item{time2}{POSIXlt date/time object}
-
-\item{tz}{time zone "" is the current time zone, and "GMT" is UTC}
 }
 \value{
-a difftime object
+a nanotime::nanoduration object
 }
 \description{
 creates a time interval

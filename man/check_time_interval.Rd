@@ -4,17 +4,18 @@
 \alias{check_time_interval}
 \title{check_time_interval}
 \usage{
-check_time_interval(interval, units = "secs", tz = "UTC")
+check_time_interval(interval, units = "secs")
 }
 \arguments{
-\item{interval}{numeric value of interval}
+\item{interval}{character value, (not numeric to allow sub-microsecond precision) 
+ - can reach nanosecond precision
+by using for example 3.000000008}
 
-\item{units}{string one of "secs", "mins", "hours", "days", "weeks"}
-
-\item{tz}{time zone "" is the current time zone, and "GMT" is UTC}
+\item{units}{charact, for now only  "secs" supported, in future also , "mins",
+"hours", "days", "weeks"}
 }
 \value{
-a "difftime" object
+a "nanotime::nanoduration" object
 }
 \description{
 Checks if it is a time interval or creates one from an integer and a unit
@@ -23,5 +24,5 @@ Checks if it is a time interval or creates one from an integer and a unit
 check_time_interval
 }
 \examples{
-#
+# check_time_interval
 }

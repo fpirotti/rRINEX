@@ -41,7 +41,7 @@ rinexobs3<-function(
   useindicators = FALSE,
   meas = NA,
   verbose = FALSE,
-  interval = .0,
+  interval = ".0",
   udt = FALSE){
   
   interval <- check_time_interval(interval)
@@ -81,10 +81,15 @@ rinexobs3<-function(
   ## for better performance
   time_offset <- c()
   obsList <- list()
-  starts <- seek(oo)
-  bench::bench_time(
+  starts <- seek(oo) 
+  bench::bench_time({
    while(TRUE){
-
+    # nowis<- seek(oo)
+    # message(nowis)
+     # seek(oo, 3048)
+    # print(readLines(oo, 1))
+ 
+    # seek(oo, nowis) 
     epochHeader <- scan(
       oo,
       what = list(
@@ -104,6 +109,7 @@ rinexobs3<-function(
       dec = hdr[["dec"]],
       nlines = 1
     )
+    if(length(epochHeader$cc)==0) break
     
     if(!is.na(epochHeader$receivClockOffset)) time_offset<-c(time_offset, offset)
     
@@ -122,6 +128,7 @@ rinexobs3<-function(
       break
     }
     
+    obs <- decodeEpochObs3(oo, epochHeader,  hdr, time, sv, useindicators, verbose)
     
     if( isTruthy(tlim1) ){
       if(time < tlim1){
@@ -134,21 +141,23 @@ rinexobs3<-function(
       }
     }
     
-    if( isTruthy(interval)){
-      if(!exists("last_epoch")){
-        last_epoch <- time
-      } else {
-        if( (time - last_epoch) < interval){
-          next
-        } else{
-          last_epoch <- last_epoch + interval    
-        }
-      }
-    }
-    obsList[[timeString]] <- decodeEpochObs3(oo, epochHeader,  hdr, time, sv, useindicators, verbose)
-     
+    # if( isTruthy(interval)){
+    #   if(!exists("last_epoch")){
+    #     last_epoch <- time
+    #   } else {
+    #     if( (time - last_epoch) < interval){
+    #       next
+    #     } else{
+    #       last_epoch <- last_epoch + interval    
+    #     }
+    #   }
+    # }
+    obsList[[timeString]] <- obs
+    
    }
-  )
+   final <- plyr::rbind.fill.matrix(obsList)
+  })
+  
 } 
 
 

@@ -50,13 +50,13 @@ check_time_interval<-function(interval, units="secs" ) {
   }
   components <- list(hours=0, minutes=0, seconds=0, nanonseconds=0)
   if(units=="secs"){
-    components$seconds<-truncate(as.numeric(interval))
+    components$seconds<-trunc(as.numeric(interval))
     components$nanonseconds<-as.integer(decimalsAfterPrecision(interval,0,9))
   } else {
     message("time interval must be in seconds")
     return(NULL) 
   }
-  if(is.numeric(interval)||is.integer(interval)){
+  # if(is.numeric(interval)||is.integer(interval)){
     if( components$seconds < 0){
       message("time interval must be non-negative")
       return(NULL)
@@ -67,7 +67,7 @@ check_time_interval<-function(interval, units="secs" ) {
                                seconds = components$seconds ,
                                nanoseconds=  components$nanonseconds)
     
-  }
+  # }
   
   df
   
@@ -250,7 +250,11 @@ cartesian2geographic <- function(x,y=NA,z=NA, useproj4=FALSE, returnsf=FALSE){
 decimalsAfterPrecision <- function(x, n=0, limit=NA) {
   if(is.na(limit)) limit <- .Machine$integer.max
   # if (abs(x - round(x)) > .Machine$double.eps^0.5) {
-    ss<-(strsplit(sub('0+$', '', as.character(x)), ".", fixed = TRUE)[[1]][[2]])
+    su<-sub('0+$', '', as.character(x))
+    if(su=="."){
+      return("0")
+    }
+    ss<-(strsplit(su, ".", fixed = TRUE)[[1]][[2]])
      substr(ss, n+1, limit)  
   # } else {
     # return(NA)
@@ -275,3 +279,4 @@ decimalplaces <- function(x) {
     return(0)
   }
 }
+
