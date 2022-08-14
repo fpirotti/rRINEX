@@ -44,6 +44,11 @@ rinexobs3<-function(
   interval = ".0",
   udt = FALSE){
   
+  
+  nl<-fpeek::peek_count_lines(f)
+  
+  if(verbose) message("Reading ", nl, " lines")
+  
   interval <- check_time_interval(interval)
 
   # if(!is.null(tlim1) && !is.null(tlim2)){
@@ -69,27 +74,26 @@ rinexobs3<-function(
   RNetCDF::att.put.nc(dataArray, "sv", "long_name", "NC_CHAR", "unitless")
   RNetCDF::att.put.nc(dataArray, "sv", "unit", "NC_CHAR", "Satellite Vector Names")
   
+  RNetCDF::var.def.nc(nc, "obs", "NC_DOUBLE", c("sv", "time"))
+  RNetCDF::att.put.nc(nc, "obs", "_FillValue", "NC_DOUBLE", -99999.9)
+  
   
   RNetCDF::att.put.nc(dataArray, "time", "TIME_SYSTEM", "NC_CHAR", hdr$tz)
   RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "start_timestamp", "NC_UINT64", 
                       bit64::integer64(hdr$TIME.OF.FIRST.OBS))
   
   RNetCDF::close.nc(dataArray)
-  # dataArray <- RNetCDF::open.nc(tt$path2file, write = TRUE)
+  dataArray <- RNetCDF::open.nc(tt$path2file, write = TRUE)
   
   ## here we initialize the vector 
   ## for better performance
   time_offset <- c()
+  
+  hdr <- obsheader3(oo, use=use, meas=meas, verbose=verbose)
   obsList <- list()
   starts <- seek(oo) 
   bench::bench_time({
-   while(TRUE){
-    # nowis<- seek(oo)
-    # message(nowis)
-     # seek(oo, 3048)
-    # print(readLines(oo, 1))
- 
-    # seek(oo, nowis) 
+   while(TRUE){ 
     epochHeader <- scan(
       oo,
       what = list(
@@ -152,11 +156,17 @@ rinexobs3<-function(
     #     }
     #   }
     # }
+    # RNetCDF::var.put.nc(dataArray, "obs", obs )
     obsList[[timeString]] <- obs
     
    }
-   final <- plyr::rbind.fill.matrix(obsList)
+   # hdr <- obsheader3(oo, use=use, meas=meas, verbose=verbose)
+   #  #  
+   # close(oo)
+   final <- data.table::rbindlist(obsList, idcol = "Time" )
   })
+  
+  sss <- sapply(1:ncol(final), function(x){ length(which(!is.na(final[,x]))) })
   
 } 
 
@@ -178,6 +188,7 @@ rinexobs3<-function(
 #' @examples
 #' #
 obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
+  ## first read the n. of lines
   if(is.character(f)) f<-opener(f)
 
   fields <- list()
@@ -193,10 +204,16 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
   addsys <- FALSE
   if(verbose) message("Reading ",length(lines)," lines.")
 
+  i <- 0
   ## 
-  for(i in 1:100){
+  while(TRUE){
     
     ln <- readLines(f,  1)
+    if(length(ln)>0){
+      i <- i+1
+    } else {
+      break
+    }
     
     if(grepl("END OF HEADER", ln, fixed=TRUE)){
       break
@@ -365,11 +382,51 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
   hdr[["fields_ind"]] <- sysind
   hdr[["Fmax"]] <- Fmax
   ll<-list(satID = character() )
-  for(i in unique(unlist(hdr$fields)) ){
-    ll[[i]]<-numeric()
+  
+  
+  start <- 4; tmpi<-4
+  from <- c(1)
+  to <- c(3)
+  for(i in 1:Fmax ){
+    ll[[as.character(i)]]<-numeric()
+    from <- c(from,  tmpi, tmpi+14, tmpi+15)
+    to <- c(to, tmpi+13, tmpi+14, tmpi+15)
+    tmpi<-tmpi+16
   }
   
+  fieldsNames <- list()
+  fieldsNamesMask <- list()
+  namesMatrix <- data.frame(id=1:(Fmax*3))
+  for(sk in names(fields) ){
+    fieldsNames[[sk]] <- paste( fields[[sk]], rep( c("obs", "LLI", "SSI"), each=length(fields[[sk]])), sep=".")
+    if(length(fieldsNames[[sk]])!=Fmax*3) {
+      rem <- Fmax*3 - length(fieldsNames[[sk]])
+      # rem2 <- Fmax  - length(fields[[sk]])
+      
+      namesMatrix[[sk]] <- c( rep(fields[[sk]], each=3), rep(NA, rem) ) 
+      fieldsNamesMask[[sk]]<- c(rep(TRUE, length(fieldsNames[[sk]])), rep(FALSE, rem) )
+    } else {
+      namesMatrix[[sk]] <- rep(fields[[sk]], each=3)
+      fieldsNamesMask[[sk]]<- rep(TRUE, Fmax*3)
+    }
+  }
+  namesMatrix$id<-rep(1:(nrow(namesMatrix)/3), each=3)
+  namesMatrix$type=c("obs","LLI","SSI")
+  namesMatrix.m <- data.table::melt( data.table::as.data.table(namesMatrix),
+                                     id.vars= c("type","id" ) )
+  
+  
+  
+  names(namesMatrix.m)<-c("type","idx", "system", "code")
+  data.table::setkey(namesMatrix.m, type, idx, system)
+  
+  hdr[["linesInHeader"]] <- i
   hdr[["scanList"]] <- ll
+  hdr[["fieldsNames"]] <- fieldsNames
+  hdr[["fieldsNamesMatrix"]] <- namesMatrix
+  hdr[["fieldsNamesMatrix.m"]] <- namesMatrix.m
+  hdr[["fieldsNamesMask"]] <- fieldsNamesMask
+  hdr[["substr"]] <- list(from=from, to=to)
   hdr
 }
 
@@ -391,19 +448,41 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
 #' #
 decodeEpochObs3 <- function(oo,  epochHeader, hdr, time, sv, useindicators, verbose=FALSE){
 
-  epochData <- scan(
-    oo,
-    # what = character(),
-    # sep=";" , #face separator
-    what = hdr$scanList,
-    quiet = TRUE,
-    fill = TRUE,
-    dec = hdr$dec,
-    nlines = epochHeader$nsats
-  )
+  epochData <- readLines(oo, n = epochHeader$nsats)
+  # epochData <- scan(
+  #   oo,
+  #   what = character(),
+  #   # sep=";" , #face separator
+  #   what = hdr$scanList,
+  #   quiet = TRUE,
+  #   fill = TRUE,
+  #   dec = hdr$dec,
+  #   nlines = epochHeader$nsats
+  # )
+  # res <- lapply(epochData, function(str){
+  #   substring(str, hdr$substr$from, hdr$substr$to)
+  # })
   
-  df <- matrix( unlist(epochData[-1]), nrow=epochHeader$nsats)
-  rownames(df)<- epochData$satID
-  df
   
+  st <- stringr::str_sub(epochData, rep(hdr$substr$from, each=epochHeader$nsats), 
+                                    rep(hdr$substr$to,each=epochHeader$nsats) )
+ 
+ 
+  sv <- st[1:epochHeader$nsats]
+  
+  system <- stringr::str_sub(sv, rep(1,epochHeader$nsats), rep(1,epochHeader$nsats) )
+  
+  unname(unlist((hdr$fieldsNamesMatrix[ , rep(system, each=3)])))
+    
+  dff<-data.table::data.table(raw = as.numeric(st[-(1:epochHeader$nsats)]) )
+  dff$type <- rep(rep( c("obs", "LLI","SSI"), each=epochHeader$nsats ), hdr$Fmax) 
+  dff$system <- rep(system, hdr$Fmax*3)
+  dff$idx <- rep(1:hdr$Fmax, each=(epochHeader$nsats*3))
+  
+  # dff2<-
+  na.omit(dff)
+  # data.table::setkey(dff2, type, idx, system)
+  # 
+  # dff3 <- hdr$fieldsNamesMatrix.m[dff2]
+  # dff3
 }

@@ -37,8 +37,16 @@ Imports:
     data.table,
     nanotime,
     bit64,
-    plyr
+    plyr,
+    Rcpp,
+    stringr,
+    fpeek
 Suggests: 
+    shiny,
     knitr,
-    rmarkdown
+    rmarkdown,
+    shinyWidgets,
+    plotly
 VignetteBuilder: knitr
+LinkingTo: 
+    Rcpp

@@ -171,9 +171,11 @@ initializeNetCDF<-function(filepath=NA, overwrite=FALSE, verbose=FALSE){
 
     
     RNetCDF::dim.def.nc(dataArray, "time", unlim=TRUE)    
-    RNetCDF::var.def.nc(dataArray, "time", "NC_INT", "time")  
+    
+    RNetCDF::var.def.nc(dataArray, "time", "NC_DOUBLE", "time")   
+    
     RNetCDF::att.put.nc(dataArray, "time", "long_name", "NC_CHAR", "TIME_SYSTEM")
-    RNetCDF::att.put.nc(dataArray, "time", "unit", "NC_CHAR", "unitless")
+    RNetCDF::att.put.nc(dataArray, "time", "unit", "NC_CHAR", "nanoseconds")
     
     
     dataArray

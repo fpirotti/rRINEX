@@ -54,4 +54,9 @@ devtools::install_github("fpirotti/rRINEX")
 
 ## Examples
 
-Check out the vignettes to see examples.
+### Some benchmarking
+
+Reading a 5 MB (uncompressed) observation file with a total of 900 epochs and
+a total of 26701 readings takes **1.3s**
+
+
