@@ -22,9 +22,7 @@ BEIDOU <- 0
 #' @param meas 'L1C'  or  c('L1C', 'C1C') or similar
 #' @param verbose boolean, DEFAULT FALSE,    output extra messages
 #' @param interval allows decimating file read by time e.g. every 5 seconds.
-#'  Useful to speed up reading of very large RINEX files
-#' @param udt  boolean, DEFAULT FALSE,   stands for use data.table - this creates and object 
-#' NOT of NetCDF but of a long table with columns - easier to understand for some
+#'  Useful to speed up reading of very large RINEX files 
 #'
 #' @return HDF5 array or data.table object if udt=TRUE
 #' @export
@@ -41,8 +39,8 @@ rinexobs3<-function(
   useindicators = FALSE,
   meas = NA,
   verbose = FALSE,
-  interval = ".0",
-  udt = FALSE){
+  interval = ".0" 
+  ){
   
   
   nl<-fpeek::peek_count_lines(f)
@@ -50,12 +48,7 @@ rinexobs3<-function(
   if(verbose) message("Reading ", nl, " lines")
   
   interval <- check_time_interval(interval)
-
-  # if(!is.null(tlim1) && !is.null(tlim2)){
-  #   interval <- make_time_interval(tlim1, tlim2)
-  # } else {
-  #   interval <- NULL
-  # }
+ 
   close(oo)
   oo<-opener(f)
   if(is.null(oo) || !inherits(oo, "file") || 
@@ -63,30 +56,7 @@ rinexobs3<-function(
     message("Problem readine the input file!")
     return(NULL)
   }
-  
-  hdr <- obsheader3(oo, use=use, meas=meas, verbose=verbose)
-  tt<-initializeNetCDF()
-  dataArray<-tt$netcdf
-  
-  
-  RNetCDF::dim.def.nc(dataArray, "sv", dimlength = length(unlist(hdr$fields)))    
-  RNetCDF::var.def.nc(dataArray, "sv", "NC_CHAR", "sv")  
-  RNetCDF::att.put.nc(dataArray, "sv", "long_name", "NC_CHAR", "unitless")
-  RNetCDF::att.put.nc(dataArray, "sv", "unit", "NC_CHAR", "Satellite Vector Names")
-  
-  RNetCDF::var.def.nc(nc, "obs", "NC_DOUBLE", c("sv", "time"))
-  RNetCDF::att.put.nc(nc, "obs", "_FillValue", "NC_DOUBLE", -99999.9)
-  
-  
-  RNetCDF::att.put.nc(dataArray, "time", "TIME_SYSTEM", "NC_CHAR", hdr$tz)
-  RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "start_timestamp", "NC_UINT64", 
-                      bit64::integer64(hdr$TIME.OF.FIRST.OBS))
-  
-  RNetCDF::close.nc(dataArray)
-  dataArray <- RNetCDF::open.nc(tt$path2file, write = TRUE)
-  
-  ## here we initialize the vector 
-  ## for better performance
+   
   time_offset <- c()
   
   hdr <- obsheader3(oo, use=use, meas=meas, verbose=verbose)
@@ -163,7 +133,9 @@ rinexobs3<-function(
    # hdr <- obsheader3(oo, use=use, meas=meas, verbose=verbose)
    #  #  
    # close(oo)
-   final <- data.table::rbindlist(obsList, idcol = "Time" )
+   finalt <- data.table::rbindlist(obsList, idcol = "Time" )
+   data.table::setkey(final, type, system, idx)
+   final <- hdr$fieldsNamesMatrix.m[finalt]
   })
   
   sss <- sapply(1:ncol(final), function(x){ length(which(!is.na(final[,x]))) })
@@ -209,12 +181,12 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
   while(TRUE){
     
     ln <- readLines(f,  1)
-    if(length(ln)>0){
+    
+    if(nchar(ln)>0){
       i <- i+1
     } else {
       break
-    }
-    
+    } 
     if(grepl("END OF HEADER", ln, fixed=TRUE)){
       break
     }
@@ -418,7 +390,7 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
   
   
   names(namesMatrix.m)<-c("type","idx", "system", "code")
-  data.table::setkey(namesMatrix.m, type, idx, system)
+  data.table::setkey(namesMatrix.m, type,  system, idx)
   
   hdr[["linesInHeader"]] <- i
   hdr[["scanList"]] <- ll
@@ -447,7 +419,7 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
 #' @examples
 #' #
 decodeEpochObs3 <- function(oo,  epochHeader, hdr, time, sv, useindicators, verbose=FALSE){
-
+  hdr$linesInHeader
   epochData <- readLines(oo, n = epochHeader$nsats)
   # epochData <- scan(
   #   oo,
@@ -472,15 +444,16 @@ decodeEpochObs3 <- function(oo,  epochHeader, hdr, time, sv, useindicators, verb
   
   system <- stringr::str_sub(sv, rep(1,epochHeader$nsats), rep(1,epochHeader$nsats) )
   
-  unname(unlist((hdr$fieldsNamesMatrix[ , rep(system, each=3)])))
-    
-  dff<-data.table::data.table(raw = as.numeric(st[-(1:epochHeader$nsats)]) )
-  dff$type <- rep(rep( c("obs", "LLI","SSI"), each=epochHeader$nsats ), hdr$Fmax) 
-  dff$system <- rep(system, hdr$Fmax*3)
-  dff$idx <- rep(1:hdr$Fmax, each=(epochHeader$nsats*3))
+  # unname(unlist((hdr$fieldsNamesMatrix[ , rep(system, each=3)])))
+  raw <- as.numeric(st[-(1:epochHeader$nsats)])
+  keep <- ( !is.na(dff$raw) )
+  dff<-list(raw=raw[keep] )
   
+  dff$type <- rep(rep( c("obs", "LLI","SSI"), each=epochHeader$nsats ), hdr$Fmax)[keep] 
+  dff$system <- rep(system, hdr$Fmax*3)[keep]
+  dff$idx <- rep(1:hdr$Fmax, each=(epochHeader$nsats*3))[keep]
+  dff
   # dff2<-
-  na.omit(dff)
   # data.table::setkey(dff2, type, idx, system)
   # 
   # dff3 <- hdr$fieldsNamesMatrix.m[dff2]
