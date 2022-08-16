@@ -7,7 +7,7 @@
 obsheader3(f, use = NA, meas = NA, verbose = FALSE)
 }
 \arguments{
-\item{f}{file}
+\item{f}{file path}
 
 \item{use}{default NA, single character or vector of systems 'G'  or c('G', 'R') or similar}
 

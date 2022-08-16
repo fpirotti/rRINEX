@@ -12,8 +12,24 @@ decompress(filepath, verbose = FALSE)
 \item{verbose}{boolean, DEFAULT FALSE  to output extra messages}
 }
 \value{
-path to decompressed file or NULL on error
+list of values: 
+\itemize{
+  \item path - path to decompressed file or, if no compression found, the original 
+  \item version - RINEX version
+ \item   filetype: "O" or "N"
+ \item   rinextype: "obs" or "nav"
+ \item   systems: M for multiple, or G for GPS
+ G for GPS
+ 
+ R for GLONASS
+ 
+ S for SBAS payload
+ 
+ E for Galileo
+ \item   filepath: filepath
+  
+  }
 }
 \description{
-Decompress .ZIP, .Z or .gz files
+Decompress .ZIP, .Z or .gz files if file is compressed
 }

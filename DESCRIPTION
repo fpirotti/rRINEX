@@ -19,34 +19,32 @@ LazyData: true
 URL: https://github.com/fpirotti/rRINEX  
 BugReports: https://github.com/fpirotti/rRINEX/issues
 RoxygenNote: 7.2.0
-Imports: 
-    sf,
+Imports:  
     tools,
     R.utils,
     utils,
-    stats,
-    lwgeom,
+    stats, 
     pingr,
     RCurl,
     XML,
-    mgsub,
-    tmap,
-    tidync,
-    RNetCDF,
-    readr,
+    mgsub,  
     data.table,
     nanotime,
     bit64,
     plyr,
     Rcpp,
     stringr,
-    fpeek
+    fpeek,
+    proj4
 Suggests: 
     shiny,
     knitr,
     rmarkdown,
     shinyWidgets,
-    plotly
+    plotly,
+    leaflet,
+    leafem,
+    magrittr
 VignetteBuilder: knitr
 LinkingTo: 
     Rcpp

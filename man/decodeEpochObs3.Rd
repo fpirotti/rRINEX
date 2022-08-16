@@ -4,7 +4,7 @@
 \alias{decodeEpochObs3}
 \title{decodeEpochObs3}
 \usage{
-decodeEpochObs3(oo, epochHeader, hdr, time, sv, useindicators, verbose = FALSE)
+decodeEpochObs3(oo, epochHeader, hdr, verbose = FALSE)
 }
 \arguments{
 \item{oo}{connection to file that is being read}
@@ -12,12 +12,6 @@ decodeEpochObs3(oo, epochHeader, hdr, time, sv, useindicators, verbose = FALSE)
 \item{epochHeader}{header with info from epoch}
 
 \item{hdr}{header with list returning from function "obsheader3"}
-
-\item{time}{}
-
-\item{sv}{}
-
-\item{useindicators}{}
 
 \item{verbose}{}
 }

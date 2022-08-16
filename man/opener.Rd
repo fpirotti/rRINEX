@@ -2,22 +2,24 @@
 % Please edit documentation in R/rio.R
 \name{opener}
 \alias{opener}
-\title{Decompress Hatanaka-compressed RINEX format}
+\title{Decompress ZIP/GZ/TAR.. and Hatanaka-compressed RINEX format}
 \usage{
-opener(f = NULL, header = FALSE, verbose = FALSE)
+opener(f = NULL, header = NA, verbose = FALSE)
 }
 \arguments{
-\item{f}{path to file that is RINEX format}
+\item{f}{path to  RINEX format file}
 
-\item{header}{boolean,  DEFAULT FALSE  read also head in  RINEX format}
+\item{header}{list with header info - if not found it will try to read by calling the
+corresponding header.}
 
 \item{verbose}{boolean, DEFAULT FALSE  to output extra messages}
 }
 \value{
-A connection in read-only mode to RINEX file
+A connection in read-only mode to RINEX file with pointer 
+right after the header, so it is ready to be read.
 }
 \description{
-Decompress Hatanaka-compressed RINEX format.
+Decompress ZIP/GZ/TAR.. and  Hatanaka-compressed RINEX format.
 }
 \examples{
 ##

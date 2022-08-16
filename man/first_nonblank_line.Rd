@@ -8,7 +8,7 @@
 first_nonblank_line(f, max_lines = 10)
 }
 \arguments{
-\item{f}{file connection to file the you want to read}
+\item{f}{full path to rinex file}
 
 \item{max_lines, }{INTEGER, maximum number of blank lines}
 }

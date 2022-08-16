@@ -10,31 +10,48 @@ sc<-proj4::ptransform(stazioni[, c("V4","V5","V6")],
 latlong<-as.data.frame(sc)/pi*180
 df<-cbind( latlong[,1:2], stazioni[,2] )
 names(df)<-c("x","y", "name")
-stazioniGNSS.ITA<-sf::st_as_sf(df, coords=c("x","y"), crs=9000) 
+# stazioniGNSS.ITA<-sf::st_as_sf(df, coords=c("x","y"), crs=9000) 
+stazioniGNSS.ITA<- df 
 
 
 ######### STAZIONI IGS -----
 url<-"https://files.igs.org/pub/station/general/IGSNetwork.csv"
+stz <- readLines(url)
+stzsp <- strsplit(stz[[1]], ",")[[1]]
+names(stzsp) <- gsub("#", "", stzsp)
+stzsp[1:7] <- list(StationName=character(),
+                        X = double(),
+                        Y = double(),
+                        Z = double(),
+                         Latitude = double(),
+                         Longitude = double(),
+                         Height = double()  ) 
+stazioni<- scan(text=stz, skip = 1,  what=stzsp, sep=",")
 
-stazioni<- readr::read_delim(url, delim = ",", trim_ws = T)
+# stazioni<- readr::read_delim(url, delim = ",", trim_ws = T)
 #rownames(stazioni)<-stazioni$nid
-sc<-proj4::ptransform(stazioni[, c("X","Y","Z")], 
-                      src.proj = "+proj=geocent +ellps=GRS80 +units=m +no_defs", 
-                      dst.proj = "+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs")
-
-latlong<-as.data.frame(sc)/pi*180
-df<-cbind( latlong[,1:2], stazioni[,1] )
-
+# sc<-proj4::ptransform(stazioni[, c("X","Y","Z")], 
+#                       src.proj = "+proj=geocent +ellps=GRS80 +units=m +no_defs", 
+#                       dst.proj = "+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs")
+# 
+# latlong<-as.data.frame(sc)/pi*180
+# df<-cbind( latlong[,1:2], stazioni[,1] )
+df <- stazioni[ c("Longitude", "Latitude", "StationName")]
 names(df)<-c("x","y", "name")
-stazioniGNSS.IGSNetwork<-sf::st_as_sf(df, coords=c("x","y"), crs=9000  )
+# stazioniGNSS.IGSNetwork<-sf::st_as_sf(df, coords=c("x","y"), crs=9000  )
+stazioniGNSS.IGSNetwork<- df 
 # mapview()+
 #  # mapview(stazioniGNSS.IGSNetwork)+
 #   mapview(stazioniGNSS.ITA)
 rinex.satellite_system <- c(
   "G"="GPS",
   "R"="GLONASS",
+  "E"="Galileo",
+  "J"="QZSS",
+  "C"="BDS",
+  "I"="IRNSS",
   "S"="SBAS payload",
-  "E"="Galileo"
+  "M"="Mixed"
 )
 
 rinex.type <- c(
@@ -87,11 +104,14 @@ example.files<- list(  obs.rover=system.file("extdata", "example.20o", package =
                                 obs.base=system.file("extdata", "example.20o", package = "rRINEX")
                     )
 
-vocabolaryRINEX = list(
-  
+vocab <- list(
+  rinex.satellite_system=rinex.satellite_system,
+  rinex.band=rinex.band,
+  rinex.attribute=rinex.attribute,
+  rinex.type=rinex.type
 )
 
 
-usethis::use_data(stazioniGNSS, example.files, internal=T, overwrite = TRUE)
+usethis::use_data(stazioniGNSS, example.files, vocab, internal=T, overwrite = TRUE)
 
 

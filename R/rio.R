@@ -1,7 +1,7 @@
 #' @name first_nonblank_line
 #' @title first_nonblank_line
 #'  Return first non-blank 80 character line in file
-#' @param f file connection to file the you want to read
+#' @param f full path to rinex file
 #' @param max_lines, INTEGER, maximum number of blank lines
 #' @return FIRST NON BLANK LINE IN RINEX
 #'
@@ -106,7 +106,9 @@ rinex_version <- function(s) {
 #' @export
 #' @examples
 #' ##
-rinexinfo <- function(f) {
+rinexinfo <- function(f) { 
+  
+  nl<-fpeek::peek_count_lines(f)
   line <- first_nonblank_line(f)  # don't choke on binary files
   if(is.null(line)){
     return(NULL)
@@ -145,30 +147,31 @@ rinexinfo <- function(f) {
                  list(
                    "filetype" = file_type,
                    "rinextype" = rinex_type,
-                   "systems" = system
+                   "systems" = system,
+                   "filepath" = f,
+                   "nLines" = nl
                  ))
   return(info)
 }
 
 
 #' @name opener
-#' @title  Decompress Hatanaka-compressed RINEX format
-#' @description Decompress Hatanaka-compressed RINEX format.
+#' @title  Decompress ZIP/GZ/TAR.. and Hatanaka-compressed RINEX format
+#' @description Decompress ZIP/GZ/TAR.. and  Hatanaka-compressed RINEX format.
 
 #'
-#' @param f path to file that is RINEX format
-#' @param header boolean,  DEFAULT FALSE  read also head in  RINEX format
+#' @param f path to  RINEX format file 
+#' @param header list with header info - if not found it will try to read by calling the
+#' corresponding header. 
 #' @param verbose boolean, DEFAULT FALSE  to output extra messages
-#' @return  A connection in read-only mode to RINEX file
+#' @return  A connection in read-only mode to RINEX file with pointer 
+#' right after the header, so it is ready to be read.
 #' @export
 #'
 #' @examples
 #' ##
-opener <- function(f = NULL, header = FALSE, verbose=FALSE) {
-  # if(is.character(f)){
-  #   return(f)
-  # }
-  
+opener <- function(f = NULL, header = NA, verbose=FALSE) {
+
   if (is.null(f) || !file.exists(f)) {
     stop("File ", f," does not exist")
   }
@@ -177,18 +180,31 @@ opener <- function(f = NULL, header = FALSE, verbose=FALSE) {
   if (finf.st_size > 100E6) {
     message("opening ", finf.st_size / 1E6 , " MByte in file ", f)
   }
-  filepaths <- decompress(f, verbose=FALSE)
-  info <- rinexinfo(filepaths[[1]])
-  if(info$is_crinex){
-    filepaths <- crx2rnx(filepaths[[1]])
-    if(verbose) message("Is Hatanaka compressed, uncompressing")
-    info <- rinexinfo(filepaths[[1]])
-  } 
+  
+  if(is.na(hdr) ) {
+    info <- rinexinfo(f)
+    if(info$rinextype=="obs"){
+      info <- obsheader3(info$filepath)
+    } else {
+      message("Not yet implemented for files of type ", info$rinextype)
+      return (NULL)
+    }
+  }
   
   if(verbose) message( sprintf("%s=%s  - ", paste(names(info)), paste(info) ) )
   
-  con<-tryCatch( file(filepaths[[1]], "rb"), error=function(e){
+  con<-tryCatch({ 
+    ff <- file(info$filepath, "r")
+    fff<-readLines(ff, info$linesInHeader)
+    if(!grepl("END OF HEADER", fff[[length(fff)]])){
+      message("Something is wrong, last line of header seems to be:\n",  
+              trimws(fff[[length(fff)]]))
+      return(NULL)
+    }
+    ff
+  }, error=function(e){
     message(e)
+    return(NULL)
   })
   con
 }

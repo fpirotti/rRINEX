@@ -24,5 +24,5 @@ Get closest permenent base station with GNSS
 }
 \examples{
 ef<-rRINEX::example.files
-getClosestStations(ef[["obs.rover"]])
+# getClosestStations(ef[["obs.rover"]])
 }

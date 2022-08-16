@@ -6,7 +6,7 @@
 \title{Example data
 --}
 \format{
-A list with information on some examples RINEX files.
+A list with  some examples RINEX files.
 \itemize{
   \item obs.rover exampleRover.20o a RINEX 3.01 format file 
   \item nav       exampleNav.20o a RINEX 3.01 format file 
@@ -18,6 +18,9 @@ example.files
 }
 \description{
 Some example files
+}
+\details{
+example.files
 }
 \examples{
 print(rRINEX::example.files)

@@ -159,11 +159,30 @@ decZip<-function(filepath){
 
 #' @name  decompress
 #' @title  decompress  files
-#' @description  Decompress .ZIP, .Z or .gz files
+#' @description  Decompress .ZIP, .Z or .gz files if file is compressed
 #' @param filepath path of file to be decompressed
 #' @param verbose boolean, DEFAULT FALSE  to output extra messages
 #'
-#' @return path to decompressed file or NULL on error
+#' @return list of values: 
+#' \itemize{
+#'   \item path - path to decompressed file or, if no compression found, the original 
+#'   \item version - RINEX version
+#'  \item   filetype: "O" or "N"
+#'  \item   rinextype: "obs" or "nav"
+#'  \item   systems: M for multiple, or G for GPS
+#'  G for GPS
+#'  
+#'  R for GLONASS
+#'  
+#'  S for SBAS payload
+#'  
+#'  E for Galileo
+#'  \item   filepath: filepath
+#'   
+#'   }
+#'
+#'
+#' 
 #' @export 
 decompress<-function(filepath, verbose=FALSE){
   
@@ -175,6 +194,15 @@ decompress<-function(filepath, verbose=FALSE){
   
   file.extension<- tools::file_ext(filepathFull)
   dirpath <- dirname(filepathFull)
+  
+  
+  if(toupper(file.extension[[1]])=="Z"){
+    filepathFull<- decZ(filepathFull)
+    if(verbose)   message("Decompressing Z compressee file")
+  }
+  
+  file.extension<- tools::file_ext(filepathFull)
+  
   
   if(toupper(file.extension[[1]])=="ZIP"){
     filepathFull<- decZip(filepathFull)
@@ -203,7 +231,13 @@ decompress<-function(filepath, verbose=FALSE){
     message(length(filepathFull), " files found!")
   }
   filepath2 <- file.path(dirpath, basename(filepathFull) )
-  if(verbose) message("Decompression resulted in following files:\n", paste(filepath2))  
-  filepath2
+  if(verbose) {
+    if(filepath2!=filepath) message("Decompression resulted in following files:\n", paste(filepath2))
+    else message("No decompression needed")
+  }
+  #### CHECK IF HATANAKA COMPRESSED ----- 
+  #### IF SO THEN UNCOMPRESS USING EMBED cpp
+  ri<-rinexinfo(filepath2)
+  ri
 
 }

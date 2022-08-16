@@ -1,4 +1,4 @@
-# https://github.com/mvglasow/satstat/wiki/NMEA-IDs 
+.datatable.aware <- TRUE
 
 SBAS <- 100  # offset for ID
 GLONASS <- 37
@@ -29,8 +29,9 @@ BEIDOU <- 0
 #'
 #' @examples
 #' f <- rRINEX::example.files$obs.crx.rover
+#' f <- "data-raw/pado346k.20d.Z"
 #' f <- "data-raw/BZRG00ITA_S_20203461015_15M_01S_MO.rnx"
-#' rinexobs3(f, verbose=TRUE, tlim1=Sys.time(), tlim2=NA)
+#' # rinexobs3(f, verbose=TRUE, tlim1=Sys.time(), tlim2=NA)
 rinexobs3<-function(
   f,
   use = NA,
@@ -38,19 +39,17 @@ rinexobs3<-function(
   tlim2 = NA,
   useindicators = FALSE,
   meas = NA,
-  verbose = FALSE,
+  verbose = TRUE,
   interval = ".0" 
   ){
   
   
-  nl<-fpeek::peek_count_lines(f)
-  
-  if(verbose) message("Reading ", nl, " lines")
   
   interval <- check_time_interval(interval)
- 
-  close(oo)
-  oo<-opener(f)
+  
+  hdr <- obsheader3(f, use=use, meas=meas, verbose=verbose)
+  
+  oo<-opener(hdr$filepath)
   if(is.null(oo) || !inherits(oo, "file") || 
      !tryCatch(isOpen(oo), error=function(e){ FALSE }) ){
     message("Problem readine the input file!")
@@ -59,10 +58,12 @@ rinexobs3<-function(
    
   time_offset <- c()
   
-  hdr <- obsheader3(oo, use=use, meas=meas, verbose=verbose)
   obsList <- list()
-  starts <- seek(oo) 
-  bench::bench_time({
+  starts <- seek(oo)
+  count <- 0
+  perc <- 0
+  linesLeft <- hdr$nLines - hdr$linesInHeader
+  # bench::bench_time({
    while(TRUE){ 
     epochHeader <- scan(
       oo,
@@ -85,7 +86,7 @@ rinexobs3<-function(
     )
     if(length(epochHeader$cc)==0) break
     
-    if(!is.na(epochHeader$receivClockOffset)) time_offset<-c(time_offset, offset)
+    if(!is.na(epochHeader$receivClockOffset)) time_offset<-c(time_offset, epochHeader$receivClockOffset )
     
     timeString <- sprintf("%s-%s-%sT%s:%s:%2.7f+00:00", 
                           epochHeader$year, 
@@ -101,8 +102,14 @@ rinexobs3<-function(
       message("Epoch flag is not 0 , not handled yet" )
       break
     }
+    count <- count + epochHeader$nsats + 1
+    obs <- decodeEpochObs3(oo, epochHeader,  hdr, time,  useindicators, verbose)
     
-    obs <- decodeEpochObs3(oo, epochHeader,  hdr, time, sv, useindicators, verbose)
+    percPre <- perc
+    perc <- round(count / linesLeft * 100,0)
+    if(percPre!=perc) cat(paste0(round(count / linesLeft * 100,0), '% completed'))
+    if (count >= linesLeft || perc==100) cat(': Done')
+    else cat('\014')
     
     if( isTruthy(tlim1) ){
       if(time < tlim1){
@@ -114,32 +121,19 @@ rinexobs3<-function(
         break
       }
     }
-    
-    # if( isTruthy(interval)){
-    #   if(!exists("last_epoch")){
-    #     last_epoch <- time
-    #   } else {
-    #     if( (time - last_epoch) < interval){
-    #       next
-    #     } else{
-    #       last_epoch <- last_epoch + interval    
-    #     }
-    #   }
-    # }
-    # RNetCDF::var.put.nc(dataArray, "obs", obs )
+     
     obsList[[timeString]] <- obs
     
    }
-   # hdr <- obsheader3(oo, use=use, meas=meas, verbose=verbose)
-   #  #  
-   # close(oo)
+ 
+   close(oo) 
    finalt <- data.table::rbindlist(obsList, idcol = "Time" )
-   data.table::setkey(final, type, system, idx)
+   data.table::setkeyv(finalt, c("type", "system", "idx") )
    final <- hdr$fieldsNamesMatrix.m[finalt]
-  })
+  # })
   
-  sss <- sapply(1:ncol(final), function(x){ length(which(!is.na(final[,x]))) })
-  
+  # sss <- sapply(1:ncol(final), function(x){ length(which(!is.na(final[,x]))) })
+   final
 } 
 
 
@@ -148,7 +142,7 @@ rinexobs3<-function(
 #' @description  get RINEX 3 OBS types, for each system type
 #' optionally, select system type and/or measurement type to greatly
 #' speed reading and save memory (RAM, disk)
-#' @param f file 
+#' @param f file path 
 #' @param use default NA, single character or vector of systems 'G'  or c('G', 'R') or similar
 #' @param meas default NA, single character or vector of measurments to considre, 
 #' e.g.   'L1C'  or  c('L1C', 'C1C') or similar 
@@ -161,32 +155,38 @@ rinexobs3<-function(
 #' #
 obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
   ## first read the n. of lines
-  if(is.character(f)) f<-opener(f)
-
+ 
+  info <- decompress(f, verbose=FALSE)
+  f <- info$filepath
+  oo<-tryCatch( file(f, "r"), error=function(e){
+    message(e)
+    return(NULL)
+  })
+  if(is.null(oo)){
+    return(NULL)
+  }
   fields <- list()
   Fmax <- 0
-  seek(f, 0)
-  hdr <- rinexinfo(f)
+
+  hdr <- info
+  hdr[["rawHeader"]]<- list()
   hdr[["APPROX.POSITION.XYZ"]]<-NA
   hdr[["tz"]]<-"GPS"
   hdr[["TIME.OF.FIRST.OBS"]]<-NA
   hdr[["dec"]]<-'.'
-  # lines <- readLines(f,  1, skipNul =  TRUE)
-  # lines <- lines[-1]
-  addsys <- FALSE
-  if(verbose) message("Reading ",length(lines)," lines.")
-
-  i <- 0
-  ## 
+  addsys <- FALSE 
+ 
+  count <- 0 
   while(TRUE){
     
-    ln <- readLines(f,  1)
-    
-    if(nchar(ln)>0){
-      i <- i+1
-    } else {
+    ln <- readLines(oo,  1 )
+ 
+    count <- count +1
+    if(count > hdr$nLines){
+      warning("End of file reached!")
       break
-    } 
+    }
+    
     if(grepl("END OF HEADER", ln, fixed=TRUE)){
       break
     }
@@ -313,8 +313,8 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
       next
     }
      
-    if( is.null(hdr[[trimws(ln)]]) ) hdr[[trimws(hd)]] <- cc
-    else hdr[[trimws(hd)]] <- paste(hdr[[trimws(hd)]],  cc)
+    if( is.null(hdr[["rawHeader"]][[trimws(ln)]]) ) hdr[["rawHeader"]][[trimws(hd)]] <- cc
+    else hdr[["rawHeader"]][[trimws(hd)]] <- paste(hdr[["rawHeader"]][[trimws(hd)]],  cc)
  
     
   }
@@ -353,22 +353,22 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
   hdr[["fields"]] <- fields
   hdr[["fields_ind"]] <- sysind
   hdr[["Fmax"]] <- Fmax
-  ll<-list(satID = character() )
+  # ll<-list(satID = character() )
   
   
   start <- 4; tmpi<-4
   from <- c(1)
   to <- c(3)
   for(i in 1:Fmax ){
-    ll[[as.character(i)]]<-numeric()
+    # ll[[as.character(i)]]<-numeric()
     from <- c(from,  tmpi, tmpi+14, tmpi+15)
     to <- c(to, tmpi+13, tmpi+14, tmpi+15)
     tmpi<-tmpi+16
   }
   
   fieldsNames <- list()
-  fieldsNamesMask <- list()
-  namesMatrix <- data.frame(id=1:(Fmax*3))
+  # fieldsNamesMask <- list()
+  namesMatrix <- data.frame(id=rep(1:(Fmax), each=3) )
   for(sk in names(fields) ){
     fieldsNames[[sk]] <- paste( fields[[sk]], rep( c("obs", "LLI", "SSI"), each=length(fields[[sk]])), sep=".")
     if(length(fieldsNames[[sk]])!=Fmax*3) {
@@ -376,13 +376,13 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
       # rem2 <- Fmax  - length(fields[[sk]])
       
       namesMatrix[[sk]] <- c( rep(fields[[sk]], each=3), rep(NA, rem) ) 
-      fieldsNamesMask[[sk]]<- c(rep(TRUE, length(fieldsNames[[sk]])), rep(FALSE, rem) )
+      # fieldsNamesMask[[sk]]<- c(rep(TRUE, length(fieldsNames[[sk]])), rep(FALSE, rem) )
     } else {
       namesMatrix[[sk]] <- rep(fields[[sk]], each=3)
-      fieldsNamesMask[[sk]]<- rep(TRUE, Fmax*3)
+      # fieldsNamesMask[[sk]]<- rep(TRUE, Fmax*3)
     }
   }
-  namesMatrix$id<-rep(1:(nrow(namesMatrix)/3), each=3)
+  # namesMatrix$id<-rep(1:(nrow(namesMatrix)/3), each=3)
   namesMatrix$type=c("obs","LLI","SSI")
   namesMatrix.m <- data.table::melt( data.table::as.data.table(namesMatrix),
                                      id.vars= c("type","id" ) )
@@ -390,14 +390,14 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
   
   
   names(namesMatrix.m)<-c("type","idx", "system", "code")
-  data.table::setkey(namesMatrix.m, type,  system, idx)
-  
-  hdr[["linesInHeader"]] <- i
-  hdr[["scanList"]] <- ll
+  data.table::setkeyv(namesMatrix.m, c("type",  "system", "idx") )
+  close(oo)
+  hdr[["linesInHeader"]] <- count
+  # hdr[["scanList"]] <- ll
   hdr[["fieldsNames"]] <- fieldsNames
   hdr[["fieldsNamesMatrix"]] <- namesMatrix
   hdr[["fieldsNamesMatrix.m"]] <- namesMatrix.m
-  hdr[["fieldsNamesMask"]] <- fieldsNamesMask
+  # hdr[["fieldsNamesMask"]] <- fieldsNamesMask
   hdr[["substr"]] <- list(from=from, to=to)
   hdr
 }
@@ -408,9 +408,6 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
 #' @param oo  connection to file that is being read  
 #' @param epochHeader header with info from epoch
 #' @param hdr header with list returning from function "obsheader3"
-#' @param time 
-#' @param sv 
-#' @param useindicators 
 #' @param verbose 
 #'
 #' @return parsed epoch as matrix with nrow=number of satellites from epochHeader
@@ -418,24 +415,10 @@ obsheader3<-function(f, use = NA, meas = NA, verbose=FALSE){
 #'
 #' @examples
 #' #
-decodeEpochObs3 <- function(oo,  epochHeader, hdr, time, sv, useindicators, verbose=FALSE){
-  hdr$linesInHeader
+decodeEpochObs3 <- function(oo,  epochHeader, hdr,  verbose=FALSE){
+
   epochData <- readLines(oo, n = epochHeader$nsats)
-  # epochData <- scan(
-  #   oo,
-  #   what = character(),
-  #   # sep=";" , #face separator
-  #   what = hdr$scanList,
-  #   quiet = TRUE,
-  #   fill = TRUE,
-  #   dec = hdr$dec,
-  #   nlines = epochHeader$nsats
-  # )
-  # res <- lapply(epochData, function(str){
-  #   substring(str, hdr$substr$from, hdr$substr$to)
-  # })
-  
-  
+ 
   st <- stringr::str_sub(epochData, rep(hdr$substr$from, each=epochHeader$nsats), 
                                     rep(hdr$substr$to,each=epochHeader$nsats) )
  
@@ -445,17 +428,16 @@ decodeEpochObs3 <- function(oo,  epochHeader, hdr, time, sv, useindicators, verb
   system <- stringr::str_sub(sv, rep(1,epochHeader$nsats), rep(1,epochHeader$nsats) )
   
   # unname(unlist((hdr$fieldsNamesMatrix[ , rep(system, each=3)])))
-  raw <- as.numeric(st[-(1:epochHeader$nsats)])
-  keep <- ( !is.na(dff$raw) )
-  dff<-list(raw=raw[keep] )
+  # raw <- scan(text=(st[-(1:epochHeader$nsats)]), skipNul = FALSE, dec=hdr$dec, quiet = TRUE )
+  raw <- st[-(1:epochHeader$nsats)]
+  keep <- ( !is.na(raw) )
   
-  dff$type <- rep(rep( c("obs", "LLI","SSI"), each=epochHeader$nsats ), hdr$Fmax)[keep] 
-  dff$system <- rep(system, hdr$Fmax*3)[keep]
-  dff$idx <- rep(1:hdr$Fmax, each=(epochHeader$nsats*3))[keep]
-  dff
-  # dff2<-
-  # data.table::setkey(dff2, type, idx, system)
-  # 
-  # dff3 <- hdr$fieldsNamesMatrix.m[dff2]
-  # dff3
+  type <- rep(rep( c("obs", "LLI","SSI"), each=epochHeader$nsats ), hdr$Fmax)
+  system <- rep(system, hdr$Fmax*3)
+  idx <- rep(1:hdr$Fmax, each=(epochHeader$nsats*3))
+
+  list(raw=raw[keep], type=type[keep],
+            system=system[keep], idx=idx[keep])
+  
+
 }

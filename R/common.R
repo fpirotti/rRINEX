@@ -123,76 +123,75 @@ isTruthy <- function(x) {
   
   return(TRUE)
 }
-
-#' initializeNetCDF
-#'
-#' @param filepath optional path to file. If not provided, a temporary file will be created
-#' @param overwrite boolean value, DFAULT=FALSE 
-#' @param verbose boolean value, DFAULT=FALSE
-#' @return boolean FALSE in case of errors, or list with 
-#' \itemize{
-#' \item path2file :path to NetCDF file
-#' \item netcdf: Object of class "NetCDF" which points to the NetCDF dataset    
-#' } 
-#' @export
-#'
-#' @examples
-#' #
-initializeNetCDF<-function(filepath=NA, overwrite=FALSE, verbose=FALSE){
-  if(is.na(filepath)) {
-    tempfile<-tempfile(fileext = ".nc")
-  } else {
-    if(dir.exists(filepath)){
-      if(verbose) message("Filepath  is a directory, a NetCDF file will be created here")
-      tempfile<-tempfile( tmpdir=filepath, fileext = ".nc")
-    }
-    ext<- tools::file_ext(filepath)
-    if(!nzchar(ext) || ext!="nc"){
-      message("File name does not have .nc extension, it will be added.")
-      tempfile <- sprintf("%s.nc", filepath)
-    }
-    if(file.exists(filepath) && !overwrite){
-      message("File ", filepath ,"  exists, please use overwrite=TRUE if you want to cancel existing file and replace it with this filepath")
-      return(FALSE)
-    }
-    tempfile <- filepath
-  }
-  
-  dataArray<- tryCatch({
-    
-    dataArray<-RNetCDF::create.nc(filename = tempfile, persist = TRUE) 
-    
-    RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "title", "NC_CHAR", "RINEX file")
-    RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "history", "NC_CHAR", "None")
-    RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "institution", "NC_CHAR", "RINEX")
-    RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "source", "NC_CHAR", "rRINEX package")
-    RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "comment", "NC_CHAR", "No comment")
-    RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "references", "NC_CHAR", "https://github.com/fpirotti/rRINEX")
-
-    
-    RNetCDF::dim.def.nc(dataArray, "time", unlim=TRUE)    
-    
-    RNetCDF::var.def.nc(dataArray, "time", "NC_DOUBLE", "time")   
-    
-    RNetCDF::att.put.nc(dataArray, "time", "long_name", "NC_CHAR", "TIME_SYSTEM")
-    RNetCDF::att.put.nc(dataArray, "time", "unit", "NC_CHAR", "nanoseconds")
-    
-    
-    dataArray
-    # According to the CF-standard, a
-    # variable should have at least the attributes ‘long_name’ (e.g., ‘measured air temperature’), ‘units’
-    # (e.g., ‘degrees_celsius’), and ‘standard_name’ (e.g., ‘air_temperature’) 
-  },
-  error=function(e){
-    message(e)
-    return(FALSE)
-  })
-
-  if(!dataArray){ 
-    return(FALSE)
-  }
-  return(list(path2file=tempfile, netcdf=dataArray))
-}
+# initializeNetCDF
+#
+# @param filepath optional path to file. If not provided, a temporary file will be created
+# @param overwrite boolean value, DFAULT=FALSE 
+# @param verbose boolean value, DFAULT=FALSE
+# @return boolean FALSE in case of errors, or list with 
+# \itemize{
+# \item path2file :path to NetCDF file
+# \item netcdf: Object of class "NetCDF" which points to the NetCDF dataset    
+# } 
+# @export
+#
+# @examples
+# #
+# initializeNetCDF<-function(filepath=NA, overwrite=FALSE, verbose=FALSE){
+#   if(is.na(filepath)) {
+#     tempfile<-tempfile(fileext = ".nc")
+#   } else {
+#     if(dir.exists(filepath)){
+#       if(verbose) message("Filepath  is a directory, a NetCDF file will be created here")
+#       tempfile<-tempfile( tmpdir=filepath, fileext = ".nc")
+#     }
+#     ext<- tools::file_ext(filepath)
+#     if(!nzchar(ext) || ext!="nc"){
+#       message("File name does not have .nc extension, it will be added.")
+#       tempfile <- sprintf("%s.nc", filepath)
+#     }
+#     if(file.exists(filepath) && !overwrite){
+#       message("File ", filepath ,"  exists, please use overwrite=TRUE if you want to cancel existing file and replace it with this filepath")
+#       return(FALSE)
+#     }
+#     tempfile <- filepath
+#   }
+#   
+#   dataArray<- tryCatch({
+#     
+#     dataArray<-RNetCDF::create.nc(filename = tempfile, persist = TRUE) 
+#     
+#     RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "title", "NC_CHAR", "RINEX file")
+#     RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "history", "NC_CHAR", "None")
+#     RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "institution", "NC_CHAR", "RINEX")
+#     RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "source", "NC_CHAR", "rRINEX package")
+#     RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "comment", "NC_CHAR", "No comment")
+#     RNetCDF::att.put.nc(dataArray, "NC_GLOBAL", "references", "NC_CHAR", "https://github.com/fpirotti/rRINEX")
+# 
+#     
+#     RNetCDF::dim.def.nc(dataArray, "time", unlim=TRUE)    
+#     
+#     RNetCDF::var.def.nc(dataArray, "time", "NC_DOUBLE", "time")   
+#     
+#     RNetCDF::att.put.nc(dataArray, "time", "long_name", "NC_CHAR", "TIME_SYSTEM")
+#     RNetCDF::att.put.nc(dataArray, "time", "unit", "NC_CHAR", "nanoseconds")
+#     
+#     
+#     dataArray
+#     # According to the CF-standard, a
+#     # variable should have at least the attributes ‘long_name’ (e.g., ‘measured air temperature’), ‘units’
+#     # (e.g., ‘degrees_celsius’), and ‘standard_name’ (e.g., ‘air_temperature’) 
+#   },
+#   error=function(e){
+#     message(e)
+#     return(FALSE)
+#   })
+# 
+#   if(!dataArray){ 
+#     return(FALSE)
+#   }
+#   return(list(path2file=tempfile, netcdf=dataArray))
+# }
 
 #' cartesian2geographic
 #' @description converts Cartesian coordinates to Spherical coordinates
@@ -206,7 +205,7 @@ initializeNetCDF<-function(filepath=NA, overwrite=FALSE, verbose=FALSE){
 #'
 #' @examples
 #' cartesian2geographic(-1079348.2174506688, 6121287.922664762, 1425405.2088229598 )
-cartesian2geographic <- function(x,y=NA,z=NA, useproj4=FALSE, returnsf=FALSE){
+cartesian2geographic <- function(x,y=NA,z=NA ){
   
   if(is.na(y)){
     if(length(x)!=3){
@@ -215,25 +214,36 @@ cartesian2geographic <- function(x,y=NA,z=NA, useproj4=FALSE, returnsf=FALSE){
     }
     y<-x[[2]]; z<-x[[3]]; x<-x[[1]]
   } 
-  if(useproj4==TRUE && nzchar(system.file(package = "proj4")) ){
-    sc<-proj4::ptransform(data =  rbind(c(x,y,z)), 
+  if( nzchar(system.file(package = "proj4")) ){
+    sc<-proj4::ptransform(data =  rbind(c(x,y,z)),  
                           src.proj = "+proj=geocent +ellps=GRS80 +units=m +no_defs", 
-                          dst.proj = "+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs")
-    
+                          dst.proj = "+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs" )
+ 
     latlong<-sc[1:2]/pi*180
     
-    if(returnsf &&  nzchar(system.file(package = "sf")) )    {
-      return(sf::st_sfc( sf::st_point(latlong), crs=9000 ))
-    }
-    return(c(long=latlong[[1]], lat=latlong[[2]]))
-  } else {
-    r = sqrt(x*x + y*y + z*z)
-    h = r -  6378137 
-    long <- atan2(y, x) * 360 / (2*pi) 
-    lat =  asin(z / r) * 360 / (2*pi) 
-    return(c(long=long, lat=lat, h=h))    
-  }
+    # if(returnsf &&  nzchar(system.file(package = "sf")) )    {
+    #   return(sf::st_sfc( sf::st_point(latlong), crs=9000 ))
+    # }
+    return(c(long=latlong[[1]], lat=latlong[[2]], h=sc[[3]]))
+  } 
+  # else {
+  #   dtr <- pi/180.0
+  #   r <- sqrt(x*x + y*y + z*z)
+  #   p <- sqrt(x*x + y*y )
+  #   h <- r -  6378137 
+  #   long <- atan2(y, x)   / dtr 
+  #   if(p< 1E-10 ){
+  #     if ( z < 0.0 ){ 
+  #       return(c(long=long, lat=-90))
+  #     } else {
+  #       return(c(long=long, lat=90))
+  #     }
+  #   }
+  #   lat <-  asin(z / r)   / dtr 
+  #   return(c(long=long, lat=lat, h=h))    
+  # }
   message("should not be here!")
+  return(NULL)
   
 }
 

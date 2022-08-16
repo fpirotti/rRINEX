@@ -4,7 +4,7 @@
 \alias{cartesian2geographic}
 \title{cartesian2geographic}
 \usage{
-cartesian2geographic(x, y = NA, z = NA, useproj4 = FALSE, returnsf = FALSE)
+cartesian2geographic(x, y = NA, z = NA)
 }
 \arguments{
 \item{x}{numeric, X coordinate OR a vector of length=3 with x, y, z values}
