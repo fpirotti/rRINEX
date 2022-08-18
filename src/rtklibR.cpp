@@ -22,8 +22,8 @@ List rtklibR_readrnx(CharacterVector &files, int flag=1, int index=1) {
     return R_NilValue;
   }
   
-  Rcout << "COMPILED FOR  " <<  NSYS << " SYSTEMS." << std::endl; 
-  Rcout << "COMPILED FOR  " <<  NFREQ  << " NFREQ ." << std::endl; 
+  // Rcout << "COMPILED FOR  " <<  NSYS << " SYSTEMS." << std::endl; 
+  // Rcout << "COMPILED FOR  " <<  NFREQ  << " NFREQ ." << std::endl; 
   char tobs[NSYS][MAXOBSTYPE][4]={{""}};
   
   List headers  = List::create();
@@ -31,11 +31,12 @@ List rtklibR_readrnx(CharacterVector &files, int flag=1, int index=1) {
   for(int i=0; i < nfiles; i++){
     String s(files[i]);
      int res = readrnxt(s.get_cstring(),1,ts,te,tint,opt,&obs,&nav,&sta);
-     Rcout << res << std::endl;
-     Rcout << res << std::endl;
+     if(res < 0) {
+       Rcout << "Problems reading file " << s.get_cstring() <<  std::endl;
+       return R_NilValue;
+     }
      
- 
-    
+     Rcout << res << std::endl;
   }
 
   return headers ;
