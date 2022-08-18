@@ -12,21 +12,15 @@ decompress(filepath, verbose = FALSE)
 \item{verbose}{boolean, DEFAULT FALSE  to output extra messages}
 }
 \value{
-list of values: 
+list of values that are returned from rinexinfo : 
 \itemize{
-  \item path - path to decompressed file or, if no compression found, the original 
-  \item version - RINEX version
+  \item is_crinex: is this file compressed Hatanaka?
+  \item version: RINEX version (or Hatanaka compressione voersion)
  \item   filetype: "O" or "N"
  \item   rinextype: "obs" or "nav"
  \item   systems: M for multiple, or G for GPS
- G for GPS
- 
- R for GLONASS
- 
- S for SBAS payload
- 
- E for Galileo
- \item   filepath: filepath
+ \item   filepath: filepath to file
+ \item   nLines: number of lines in file 
   
   }
 }

@@ -163,21 +163,15 @@ decZip<-function(filepath){
 #' @param filepath path of file to be decompressed
 #' @param verbose boolean, DEFAULT FALSE  to output extra messages
 #'
-#' @return list of values: 
+#' @return list of values that are returned from rinexinfo : 
 #' \itemize{
-#'   \item path - path to decompressed file or, if no compression found, the original 
-#'   \item version - RINEX version
+#'   \item is_crinex: is this file compressed Hatanaka?
+#'   \item version: RINEX version (or Hatanaka compressione voersion)
 #'  \item   filetype: "O" or "N"
 #'  \item   rinextype: "obs" or "nav"
 #'  \item   systems: M for multiple, or G for GPS
-#'  G for GPS
-#'  
-#'  R for GLONASS
-#'  
-#'  S for SBAS payload
-#'  
-#'  E for Galileo
-#'  \item   filepath: filepath
+#'  \item   filepath: filepath to file
+#'  \item   nLines: number of lines in file 
 #'   
 #'   }
 #'
@@ -230,14 +224,22 @@ decompress<-function(filepath, verbose=FALSE){
   if(length(filepathFull)>1){
     message(length(filepathFull), " files found!")
   }
+  
   filepath2 <- file.path(dirpath, basename(filepathFull) )
+  
   if(verbose) {
     if(filepath2!=filepath) message("Decompression resulted in following files:\n", paste(filepath2))
     else message("No decompression needed")
   }
   #### CHECK IF HATANAKA COMPRESSED ----- 
   #### IF SO THEN UNCOMPRESS USING EMBED cpp
-  ri<-rinexinfo(filepath2)
+  ri <- rinexinfo(filepath2)
+  if(ri$is_crinex){
+    ri<-rinexinfo(crx2rnx(ri$filepath))
+  }
+  if(ri$is_crinex){
+    ri<-rinexinfo(crx2rnx(ri$filepath))
+  }
   ri
 
 }

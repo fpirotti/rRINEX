@@ -110,7 +110,17 @@ vocab <- list(
   rinex.attribute=rinex.attribute,
   rinex.type=rinex.type
 )
+file.exists("/archivio/R/shared/rRINEX/src/RTKLIB/src/rinex.so")
+system("ls")
 
+ffs <- list.files("src/RTKLIB-2.4.3-b34/src", pattern = "\\.c$")
+system(sprintf("cd src/RTKLIB-2.4.3-b34/src; R CMD SHLIB  rtklib.h %s",
+               paste0(ffs, collapse = " ") ) )
+
+system(sprintf("cd src/RTKLIB-2.4.3-b34/src; R CMD SHLIB rtklib.h" ) )
+### 1. compilare iers in lib
+dyn.load("/archivio/R/shared/rRINEX/src/RTKLIB-2.4.3-b34/src/convgpx.so")
+.C("double_me", x = as.integer(5))
 
 usethis::use_data(stazioniGNSS, example.files, vocab, internal=T, overwrite = TRUE)
 

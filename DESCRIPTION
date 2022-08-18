@@ -19,15 +19,15 @@ LazyData: true
 URL: https://github.com/fpirotti/rRINEX  
 BugReports: https://github.com/fpirotti/rRINEX/issues
 RoxygenNote: 7.2.0
-Imports:  
+Imports: 
     tools,
     R.utils,
     utils,
-    stats, 
+    stats,
     pingr,
     RCurl,
     XML,
-    mgsub,  
+    mgsub,
     data.table,
     nanotime,
     bit64,
