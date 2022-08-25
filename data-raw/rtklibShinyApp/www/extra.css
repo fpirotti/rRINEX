@@ -1,0 +1,19 @@
+
+#loading-spinner-content {
+  font-weight:bold;
+   text-shadow: 0 0 3px #FFF;
+   color:#000;
+}
+#loading-spinner {
+  width:250px;
+  height:150px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 10000;
+  text-align:center;
+    -webkit-filter: drop-shadow( 1px 1px 5px #fff );
+    filter: drop-shadow( 1px 1px 5px #fff );
+  margin-top: -75px;  /* half of the spinner's height */
+  margin-left: -125px; /* half of the spinner's width */
+}

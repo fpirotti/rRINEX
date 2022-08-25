@@ -5,6 +5,8 @@ library(shinydashboard)
 library(shinydashboardPlus)
 library(shinyWidgets)
 library(shinyjs)
+library(shinyjqui)
+
 ok <-
   setdiff(c("leaflet", "shiny", "leafem"),
           rownames(utils::installed.packages()))
