@@ -2,28 +2,18 @@ PLOTWINDOW <- function(){
   
  shinyjqui::jqui_draggable(  
     column(12, style="displan:none; position:absolute;z-index:99999; width:calc( 100vw - 60px ); top:5px; left:10px;", 
-           box( id= "RTKLib.PLOT",
-                title = HTML(paste0(icon("chart-line", verify_fa = FALSE), " RTKLib PLOT                ")), 
-                closable = TRUE,  width = NULL,
+           shinydashboardPlus::box( id= "RTKPLOT",
+                title = HTML(paste0(img(src="rtk2.ico",height = "24px"), " RTKPLOT                ")), 
+                 width = NULL,
                 collapsed = F,
-                enable_label = T, 
-                label_text = "",
-                label_status = "danger",
-                status = "warning",
+                # enable_label = F, 
+                # label_text = "",
+                # label_#status = "danger",
+                status = "primary",
                 solidHeader = TRUE,
-                collapsible = TRUE,   
-                div("hei"),
-                shinyWidgets::prettyCheckbox("tstart", "Time Start", inline = T),
-                shinyWidgets::prettyCheckbox("tend", "Time End", inline = T),
-                shinyWidgets::prettyCheckbox("interval", "Interval", inline = T),
-                shiny::fluidRow(
-                  column(4, shinyWidgets::airDatepickerInput("tstartval",timepicker = TRUE)),
-                  column(4, shinyWidgets::airDatepickerInput("tendval",timepicker = TRUE)),
-                  column(4, shinyWidgets::airDatepickerInput("interval",timepicker = TRUE))
-                ),
-                fileInput("file.obs", "RTCM, RCV RAW or RINEX OBS"),
-                fileInput("file.nav1", "RINEX OBS/NAV/GNAV/HNAV/..."),
-                fileInput("file.nav2", "RINEX OBS/NAV/GNAV/HNAV/...")
+                collapsible = TRUE,  
+                closable = TRUE,  
+                plotly::plotlyOutput("rtkplot.plotly")
            ) 
     ),
     options = list(
@@ -35,4 +25,122 @@ PLOTWINDOW <- function(){
     )
   )
     
+}
+
+
+
+POSTPROCESSWINDOW <- function(){
+  
+  shinyjqui::jqui_draggable(  
+    column(12, style="displan:none; position:absolute;z-index:99999; width:calc( 100vw - 60px ); top:5px; left:10px;", 
+           shinydashboardPlus::box( id= "RTKPOST",
+                title = HTML(paste0(img(src="rtk1.ico",height = "24px"), " RTKPOST        ")), 
+                closable = TRUE,  width = NULL,
+                collapsed = F,
+                # enable_label = F, 
+                # label_text = "",
+                # label_#status = "danger",
+                status = "primary",
+                solidHeader = TRUE,
+                collapsible = TRUE,   
+                shinyWidgets::prettyCheckbox("tstart", "Time Start", inline = T),
+                shinyWidgets::prettyCheckbox("tend", "Time End", inline = T),
+                shinyWidgets::prettyCheckbox("interval", "Interval", inline = T),
+                shiny::fluidRow(
+                  column(4, shinyWidgets::airDatepickerInput("tstartval",timepicker = TRUE)),
+                  column(4, shinyWidgets::airDatepickerInput("tendval",timepicker = TRUE)),
+                  column(4, shinyWidgets::airDatepickerInput("interval",timepicker = TRUE))
+                ),
+                fileInput("file.obs", "RTCM, RCV RAW or RINEX OBS"),
+                fileInput("file.nav1", "RINEX OBS/NAV/GNAV/HNAV/..."),
+                fileInput("file.nav2", "RINEX OBS/NAV/GNAV/HNAV/..."),
+                shiny::fluidRow(
+                  column(2, shinyWidgets::actionBttn("rtkpost.plot.window","Plot...", style="fill", size="sm") ),
+                  column(2, shinyWidgets::actionBttn("rtkpost.view.window","View...", style="fill", size="sm") ),
+                  column(2, shinyWidgets::actionBttn("rtkpost.tokml.window","ToKML...", style="fill", size="sm") ),
+                  column(2, shinyWidgets::actionBttn("rtkpost.options.window", "Options...", style="fill", size="sm") ),
+                  column(2, shinyWidgets::actionBttn("rtkpost.execute.window", "Execute...", style="fill", size="sm") ),
+                  column(2, shinyWidgets::actionBttn("rtkpost.close.window", "Close...",  style="fill", size="sm") )
+                )
+                
+           ) 
+    ),
+    options = list(
+      cursor = "move",
+      zIndex = 99999999999,
+      stack = ".container",
+      opacity = 0.5,
+      handle = ".box-header"
+    )
+  )
+  
+}
+
+
+CONVWINDOW <- function(){
+  
+  shinyjqui::jqui_draggable(  
+    column(12, style="displan:none; position:absolute;z-index:99999; width:calc( 100vw - 60px ); top:5px; left:10px;", 
+           shinydashboardPlus::box( id= "RTKCONV",
+                                    title = HTML(paste0(img(src="rtk3.ico",height = "24px"), " RTKCONV        ")), 
+                                    closable = TRUE,  width = NULL,
+                                    collapsed = F,
+                                    status = "primary", 
+                                    # enable_label = F, 
+                                    # label_text = "",
+                                    # label_#status = "danger",
+                                    # status = "primary",
+                                    solidHeader = TRUE,
+                                    collapsible = TRUE,   
+                                    div("hei")
+                                    
+           ) 
+    ),
+    options = list(
+      cursor = "move",
+      zIndex = 99999999999,
+      stack = ".container",
+      opacity = 0.5,
+      handle = ".box-header"
+    )
+  )
+  
+}
+
+
+
+
+
+OPTIONSWINDOW <- function(){
+  
+  shinyjqui::jqui_draggable(  
+    column(12, style="displan:none; position:absolute;z-index:99999; width:calc( 100vw - 60px ); top:5px; left:10px;", 
+           shinydashboardPlus::box( id= "RTKOPTIONS", 
+                                    title = HTML(paste0(icon("gears"), " OPTIONS        ")), 
+                                    closable = TRUE,  width = NULL,
+                                    collapsed = F,
+                                    status = "primary", 
+                                    # enable_label = F, 
+                                    # label_text = "",
+                                    # label_#status = "danger",
+                                    # status = "primary",
+                                    solidHeader = TRUE,
+                                    collapsible = TRUE,   
+                                    tabsetPanel(type = "tabs",
+                                                tabPanel("Plot", plotOutput("plot")),
+                                                tabPanel("Summary", verbatimTextOutput("summary")),
+                                                tabPanel("Table", tableOutput("table"))
+                                    )
+                                    
+           ) 
+    ),
+    options = list(
+      cursor = "move",
+      zIndex = 99999999999,
+      stack = ".container",
+      opacity = 0.5,
+      handle = ".box-header"
+    )
+  )
+  
 }

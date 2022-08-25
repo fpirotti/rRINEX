@@ -16,17 +16,41 @@ function(req) {
         skin = "black",
         title = "rtklibR",
         
-        dashboardHeader(title=customHeaderPanel("rtklibR"), disable=FALSE,
-                        
-                        tags$li( id="internetConnection_holder",
-                                 title="Clicca per misurare la velocità della tua rete!",
-                                class = "dropdown", style=" margin-top:7px; cursor:pointer;",
-                        actionBttn("internetConnectionButton", NULL, size = "sm", 
-                                   style = "minimal", color="success",
-                                   img(src = "https://raw.githubusercontent.com/tomojitakasu/RTKLIB/master/app/icon/rtk2.ico",
-                                       height = "50px") )
-                        )
-                        ),
+        
+        dashboardHeader(
+            title = customHeaderPanel("rtklibR"),
+            disable = FALSE,
+            
+            tags$li(
+                id = "rtkplot",
+                title = "RtkPLOT",
+                class = "dropdown",
+                style = " margin-top:7px; cursor:pointer;",
+                onclick = "$('#'+this.id.toUpperCase() ).show(100)",
+                img(src = "https://raw.githubusercontent.com/tomojitakasu/RTKLIB/master/app/icon/rtk2.ico",
+                    height = "36px")
+            ),
+            
+            tags$li(
+                id = "rtkpost",
+                title = "RtkPOST",
+                class = "dropdown",
+                onclick = "$('#'+this.id.toUpperCase() ).show(100)",
+                style = " margin-top:7px; cursor:pointer;",
+                img(src = "https://raw.githubusercontent.com/tomojitakasu/RTKLIB/master/app/icon/rtk1.ico",
+                    height = "36px")
+            ),
+            
+            tags$li(
+                id = "rtkget",
+                title = "RtkGET",
+                class = "dropdown",
+                style = " margin-top:7px; cursor:pointer;",
+                onclick = "$('#'+this.id.toUpperCase() ).show(100)",
+                img(src = "https://raw.githubusercontent.com/tomojitakasu/RTKLIB/master/app/icon/rtk3.ico",
+                    height = "36px")
+            )
+        ), 
         dashboardSidebar(  ),
         dashboardBody(
             useShinyjs(),
@@ -34,8 +58,9 @@ function(req) {
             
             
             PLOTWINDOW(),
-            
-            
+            POSTPROCESSWINDOW(),
+            CONVWINDOW(),
+            OPTIONSWINDOW(),
             leafletOutput("rinexMap"),
             
             div(

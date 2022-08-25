@@ -58,6 +58,24 @@ shinyServer(function(input, output, session) {
         
     })
     
+    
+    
+    shiny::observeEvent(input$rtkpost.plot.window, {
+        
+    })
+    
+    shiny::observeEvent(input$rtkpost.view.window, {
+        
+    })
+    
+    shiny::observeEvent(input$rtkpost.tokml.window, {
+        
+    })
+    
+    shiny::observeEvent(input$rtkpost.options.window, {
+        shinyjs::runjs("$('#RTKOPTIONS').show(100)")
+    })
+    
     shiny::observeEvent(input$rinexfile, {
         fln <- input$rinexfile$datapath
         
