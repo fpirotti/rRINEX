@@ -1,3 +1,15 @@
+list.of.packages <- c("leaflet", "leafem", "shiny", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinyjs", "shinyjqui")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)>0) {
+  message("The following packages are required before running:
+",
+        paste(new.packages, collapse = " - "), "
+... type YES or Y and press return to install them ")
+  var = readline()
+  if( toupper(var)=="Y" || toupper(var)=="YES") install.packages(new.packages)
+  
+}
+
 library(leaflet)
 library(leafem)
 library(shiny)
@@ -7,15 +19,8 @@ library(shinyWidgets)
 library(shinyjs)
 library(shinyjqui)
 
-ok <-
-  setdiff(c("leaflet", "shiny", "leafem"),
-          rownames(utils::installed.packages()))
-if (length(ok) > 0) {
-  message("Please install the following packages before running:
-        ",
-        paste(ok, collapse = " - "))
-  return(NULL)
-}
+
+ 
 
 leaflet.object <-
   leaflet::leaflet() %>%

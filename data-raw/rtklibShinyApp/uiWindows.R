@@ -110,7 +110,7 @@ CONVWINDOW <- function(){
 
 
 
-
+## RTKOPTIONS ----
 OPTIONSWINDOW <- function(){
   
   shinyjqui::jqui_draggable(  
@@ -127,9 +127,38 @@ OPTIONSWINDOW <- function(){
                                     solidHeader = TRUE,
                                     collapsible = TRUE,   
                                     tabsetPanel(type = "tabs",
-                                                tabPanel("Plot", plotOutput("plot")),
-                                                tabPanel("Summary", verbatimTextOutput("summary")),
-                                                tabPanel("Table", tableOutput("table"))
+                                                tabPanel("Setting1", 
+                                                         shiny::fluidRow(
+                                                           column(6, div("Positioning mode") ),
+                                                           column(6, shinyWidgets::pickerInput("settings1.positioning.mode", choices = c("Single", "....")  ) )
+                                                         ),
+                                                         shiny::fluidRow(
+                                                           column(6, div("Frequency / Filter Type") ),
+                                                           column(3, shinyWidgets::pickerInput("settings1.frequency", choices = c("L1/L2", "....")  ) ),
+                                                           column(3, shinyWidgets::pickerInput("settings1.filter.type", choices = c("Forward", "Backward", "Combined")  ) )
+                                                         ),
+                                                         shiny::fluidRow(
+                                                           column(6, div("Positioning mode") ),
+                                                           column(6, shinyWidgets::pickerInput("settings1.positioning.mode", choices = c("Single", "....")  ) )
+                                                         ),
+                                                         checkboxGroupButtons(
+                                                           inputId = "somevalue", label = "Make a choice :", 
+                                                           choices = c("GPS", "GLO", "GALILEO", "QZSS", "SBAS", "Beidu")#, 
+                                                           #justified = TRUE, status = "primary"
+                                                         )
+                                                         ),
+                                                tabPanel("Setting2", 
+                                                         ),
+                                                tabPanel("Output", 
+                                                         ),
+                                                tabPanel("Stats", 
+                                                         ),
+                                                tabPanel("Positions", 
+                                                         ),
+                                                tabPanel("Files", 
+                                                         ),
+                                                tabPanel("Misc", 
+                                                         )
                                     )
                                     
            ) 
