@@ -14,7 +14,8 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 The following command might work and will download and run the **web
 interface…** - shiny library is required.
 
-runGitHub(“rRINEX”, “fpirotti”, subdir = “data-raw/rtklibShinyApp/”)
+shiny::runGitHub(“rRINEX”, “fpirotti”, subdir =
+“data-raw/rtklibShinyApp/”)
 
 The goal of rRINEX is to provide simple tools to analyse your RINEX
 observation files and create plots.
