@@ -1,4 +1,5 @@
-list.of.packages <- c("leaflet", "leafem", "shiny", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinyjs", "shinyjqui")
+list.of.packages <- c("leaflet", "leafem", "shiny", "shinydashboard", "shinydashboardPlus",
+                      "shinyWidgets", "shinyjs", "shinyjqui", "plotly", "leaflet.extras" )
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)>0) {
   message("The following packages are required before running:
