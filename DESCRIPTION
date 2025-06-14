@@ -1,7 +1,7 @@
 Package: rRINEX
 Type: Package
 Title: Reads RINEX Files
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: 
     c(person(given = "Francesco",
              family = "Pirotti",
@@ -28,8 +28,11 @@ Imports:
     XML,
     mgsub, 
     nanotime,  
-    Rcpp, 
-    proj4
+    proj4,
+    httr,
+    rvest,
+    lubridate,
+    stringr
 Suggests: 
     shiny,
     knitr,
@@ -40,5 +43,5 @@ Suggests:
     leafem,
     magrittr
 VignetteBuilder: knitr
-LinkingTo: 
-    Rcpp
+RoxygenNote: 7.3.1
+Roxygen: list(markdown = TRUE)

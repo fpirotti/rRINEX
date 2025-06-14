@@ -3,9 +3,9 @@
 \name{isTruthy}
 \alias{isTruthy}
 \title{Truthy and falsy values
-FROM SHINY! https://github.com/rstudio/shiny 
+FROM SHINY! https://github.com/rstudio/shiny
 The terms "truthy" and "falsy" generally indicate whether a value, when
-coerced to a [base::logical()], is `TRUE` or `FALSE`. We use
+coerced to a \code{\link[base:logical]{base::logical()}}, is \code{TRUE} or \code{FALSE}. We use
 the term a little loosely here; our usage tries to match the intuitive
 notions of "Is this value missing or available?", or "Has the user provided
 an answer?", or in the case of action buttons, "Has the button been
@@ -17,21 +17,22 @@ isTruthy(x)
 \item{x}{An expression whose truthiness value we want to determine}
 }
 \description{
-For example, a `textInput` that has not been filled out by the user has
-a value of `""`, so that is considered a falsy value.
+For example, a \code{textInput} that has not been filled out by the user has
+a value of \code{""}, so that is considered a falsy value.
 }
 \details{
-To be precise, a value is truthy *unless* it is one of:
+To be precise, a value is truthy \emph{unless} it is one of:
+\itemize{
+\item \code{FALSE}
+\item \code{NULL}
+\item \code{""}
+\item An empty atomic vector
+\item An atomic vector that contains only missing values
+\item A logical vector that contains all \code{FALSE} or missing values
+\item An object of class \code{"try-error"}
+\item A value that represents an unclicked \code{\link[=actionButton]{actionButton()}}
+}
 
-* `FALSE`
-* `NULL`
-* `""`
-* An empty atomic vector
-* An atomic vector that contains only missing values
-* A logical vector that contains all `FALSE` or missing values
-* An object of class `"try-error"`
-* A value that represents an unclicked [actionButton()]
-
-Note in particular that the value `0` is considered truthy, even though
-`as.logical(0)` is `FALSE`.
+Note in particular that the value \code{0} is considered truthy, even though
+\code{as.logical(0)} is \code{FALSE}.
 }

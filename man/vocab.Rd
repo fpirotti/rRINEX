@@ -3,52 +3,67 @@
 \docType{data}
 \name{vocab}
 \alias{vocab}
-\title{vocab
---}
+\title{\subsection{vocab}{
+}}
 \format{
-A list with information on  RINEX terminaology
+A list with information on  RINEX terminology
 \itemize{
-  \item rinex.type exampleRover.20o a RINEX 3.01 format file 
-  J: QZSS
-  C: BDS
-  I: IRNSS
-  S: SBAS payload
-  M: Mixed
+\item rinex.type exampleRover.20o a RINEX 3.01 format file\tabular{ll}{
+   \strong{Type} \tab \strong{Value} \cr
+   \strong{J} \tab QZSS \cr
+   \strong{C} \tab BDS \cr
+   \strong{I} \tab IRNSS \cr
+   \strong{S} \tab SBAS payload \cr
+   \strong{M} \tab Mixed \cr
+}
 
-  \item rinex.band     
-  1 = L1 (GPS, QZSS, SBAS,BDS)
-     G1 (GLO)
-     E1 (GAL)
-     B1 (BDS)
- 2 = L2 (GPS, QZSS)
-     G2 (GLO)
-     B1-2 (BDS)
- 4 = G1a (GLO)
- 5 = L5 (GPS, QZSS, SBAS,
-         IRNSS)
-     E5a (GAL)
-     B2/B2a (BDS)
- 6 = E6 (GAL)
-     L6 (QZSS)
-     B3 (BDS)
-     G2a (GLO)
- 7 = E5b (GAL)
-     B2/B2b (BDS)
- 8 = E5a+b (GAL)
-     B2a+b (BDS)
-   
-  \item rinex.type      C = Code / Pseudorange
-   L = Phase
-   D = Doppler
-   S = Raw signal strength(carrier to noise ratio)
-   I = Ionosphere phase delay
-   X = Receiver channel numbers
-   
-  \item rinex.satellite_system  
-  G: GPS
-  R: GLONASS
-  E: Galileo
 
+\item rinex.band\tabular{ll}{
+   \strong{Band} \tab \strong{type} \cr
+   1 \tab L1 (GPS, QZSS, SBAS,BDS) \cr
+    \tab G1 (GLO) \cr
+    \tab E1 (GAL) \cr
+    \tab B1 (BDS) \cr
+   2 \tab L2 (GPS, QZSS) \cr
+    \tab G2 (GLO) \cr
+    \tab B1-2 (BDS) \cr
+   4 \tab G1a (GLO) \cr
+   5 \tab L5 (GPS, QZSS, SBAS,   IRNSS) \cr
+    \tab E5a (GAL) \cr
+    \tab B2/B2a (BDS) \cr
+   6 \tab E6 (GAL) \cr
+    \tab L6 (QZSS) \cr
+    \tab B3 (BDS) \cr
+    \tab G2a (GLO) \cr
+   7 \tab E5b (GAL) \cr
+    \tab B2/B2b (BDS) \cr
+   8 \tab E5a+b (GAL) \cr
+    \tab B2a+b (BDS) \cr
+    \tab  \cr
+}
+
+
+\item rinex.type\tabular{ll}{
+   \strong{Code} \tab \strong{type} \cr
+   \strong{C} \tab Code / Pseudorange \cr
+   \strong{L} \tab Phase \cr
+   \strong{D} \tab Doppler \cr
+   \strong{S} \tab Raw signal strength(carrier to noise ratio) \cr
+   \strong{I} \tab Ionosphere phase delay \cr
+   \strong{X} \tab Receiver channel numbers \cr
+}
+
+
+\item rinex.satellite_system\tabular{ll}{
+   \strong{Code} \tab \strong{GNSS System} \cr
+   \strong{G} \tab GPS \cr
+   \strong{R} \tab GLONASS \cr
+   \strong{E} \tab Galileo \cr
+   \strong{C} \tab BeiDou (BDS) \cr
+   \strong{J} \tab QZSS \cr
+   \strong{I} \tab IRNSS \cr
+   \strong{S} \tab SBAS \cr
+   \strong{M} \tab Mixed or Multiple \cr
 }
 }
 \usage{

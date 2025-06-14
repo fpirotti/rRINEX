@@ -11,7 +11,7 @@ get.IGS(tms, station, onlycheck = F, type = "highrate")
 
 \item{station}{name of station of the EUREF Region}
 
-\item{onlycheck}{(default FALSE) do not download the file, just check if it exists and 
+\item{onlycheck}{(default FALSE) do not download the file, just check if it exists and
 return TRUE or FALSE}
 
 \item{type}{either "highrate" or other}
@@ -21,9 +21,9 @@ file path to downloaded observation and navigation files if download is successf
 or logical FALSE if not, or  if only checking logical TRUE or FALSE
 }
 \description{
-Downloads automatically a base station's observation 
+Downloads automatically a base station's observation
 and navigation file for a specific time and date. IGS framework stations, see
-(\href{https://www.igs.org/maps/}{https://www.igs.org/maps/}).      
+(\href{https://www.igs.org/maps/}{https://www.igs.org/maps/}).
 
 See (\href{http://www.epncb.oma.be/_networkdata/data_access/highrate/}{http://www.epncb.oma.be/_networkdata/data_access/highrate/})
 }

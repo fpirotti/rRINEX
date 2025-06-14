@@ -10,7 +10,7 @@ timestamp2parts(timestamp)
 \item{timestamp}{date and time to decompose.}
 }
 \value{
-list with parts useful to replace variables in URL (loosely adopted from URL_LIST.txt of RTKLIB) 
+list with parts useful to replace variables in URL (loosely adopted from URL_LIST.txt of RTKLIB)
 \itemize{
 \item Y -> yyyy    : year (4 digits) (2000-2099)
 \item y -> yy      : year (2 digits) (00-99)
@@ -21,7 +21,7 @@ list with parts useful to replace variables in URL (loosely adopted from URL_LIS
 \item M -> mm      : minutes         (00-59)
 \item n -> ddd     : day of year  -julianday    (001-366)
 \item W -> wwww    : gps week        (0001-9999)
-\item D -> d       : day of gps week (0-6) 
+\item D -> d       : day of gps week (0-6)
 }
 }
 \description{

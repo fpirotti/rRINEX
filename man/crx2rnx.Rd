@@ -13,23 +13,23 @@ crx2rnx(filepath)
 character string of path to decompressed file
 }
 \description{
-Decompress Hatanaka-compressed RINEX format.    
+Decompress Hatanaka-compressed RINEX format.
 
-Uses compiled code from crx2rnx.c 
+Uses compiled code from crx2rnx.c
 Original C code is from https://terras.gsi.go.jp/ja/crx2rnx.html
 Please check license
 }
 \examples{
 ef<-rRINEX::example.files  
-crx2rnx(ef$obs2.base)
+# crx2rnx(ef$obs2.base)
 
 }
 \references{
-LICENSE:   
+LICENSE:
 (\href{https://terras.gsi.go.jp/ja/crx2rnx/LICENSE.txt}{https://terras.gsi.go.jp/ja/crx2rnx/LICENSE.txt})
 See the following paper for more detail of the compression format and the tools:
 
-PAPER:  
+PAPER:
 Bulletin of the Geographical Survey Institute, 55, 21-30,
 (\href{http://www.gsi.go.jp/ENGLISH/Bulletin55.html}{hhttp://www.gsi.go.jp/ENGLISH/Bulletin55.html})
 }

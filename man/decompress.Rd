@@ -12,17 +12,17 @@ decompress(filepath, verbose = FALSE)
 \item{verbose}{boolean, DEFAULT FALSE  to output extra messages}
 }
 \value{
-list of values that are returned from rinexinfo : 
+list of values that are returned from rinexinfo :
 \itemize{
-  \item is_crinex: is this file compressed Hatanaka?
-  \item version: RINEX version (or Hatanaka compressione voersion)
- \item   filetype: "O" or "N"
- \item   rinextype: "obs" or "nav"
- \item   systems: M for multiple, or G for GPS
- \item   filepath: filepath to file
- \item   nLines: number of lines in file 
-  
-  }
+\item is_crinex: is this file compressed Hatanaka?
+\item version: RINEX version (or Hatanaka compressione voersion)
+\item   filetype: "O" or "N"
+\item   rinextype: "obs" or "nav"
+\item   systems: M for multiple, or G for GPS
+\item   filepath: filepath to file
+\item   nLines: number of lines in file
+
+}
 }
 \description{
 Decompress .ZIP, .Z or .gz files if file is compressed

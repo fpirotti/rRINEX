@@ -11,7 +11,7 @@ getFile.Veneto(timestamp, station, onlycheck = F)
 
 \item{station}{name of station of the Veneto Region}
 
-\item{onlycheck}{(default FALSE) do not download the file, just check if it exists and 
+\item{onlycheck}{(default FALSE) do not download the file, just check if it exists and
 return TRUE or FALSE}
 }
 \value{
@@ -19,8 +19,8 @@ file path to downloaded observation and navigation files if download is successf
 or logical FALSE if not, or  if only checking logical TRUE or FALSE
 }
 \description{
-Downloads automatically a base station's observation 
-and navigation file for a specific time and date. Veneto Network.   
+Downloads automatically a base station's observation
+and navigation file for a specific time and date. Veneto Network.
 
 See (\href{http://retegnssveneto.cisas.unipd.it}{http://retegnssveneto.cisas.unipd.it})
 }

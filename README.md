@@ -1,4 +1,9 @@
-
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+ 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # rRINEX
@@ -12,27 +17,25 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 ## STILL BEING DEVELOPED, NOT YET OPERATIONAL !!
 
-The following command might work and will download and run the **web
-interface…** - shiny library is required.
+The goal of rRINEX is to provide [***simple tools***]{.underline} to
+analyse your RINEX observation files.
 
-shiny::runGitHub(“rRINEX”, “fpirotti”, subdir =
-“data-raw/rtklibShinyApp/”)
+The idea is that the user simply uploads one or more RINEX OBS files,
+compressed or uncompressed and the app will try to:
 
-The goal of rRINEX is to provide simple tools to analyse your RINEX
-observation files.
+-   show an initial rough position
 
-Just upload them and it will try to find NAV files and Ephemeris data
-and create plots, statistics etc….
+-   create plots, provide SNR statistics etc….
 
-Some advantages is that it can use parallel reading of large files.
+-   download CORS data (NAV files) and other precise Ephemeris
 
-It interfaces with
-<a href="http://www.rtklib.com" target="_blank"><em>RTKLIB</em></a> ,
-which is easily downloaded from the link, both for linux and windows.
-Download the observation data of a CORS (continuous operating reference
-stations) network froma GNSS data archive in the net. For now it
-connects to a user-provided list of CORS repositories, using a templated
-string just like RTKLIB’s URL_LIST.txt
+-   provide user with some feedback on how to best post-process the data
+
+We did not reinvent the wheel, and thus [RTKLIB](http://www.rtklib.com)
+is used as backend. Download the observation data of a CORS (continuous
+operating reference stations) network from a GNSS data archive in the
+net. For now it connects to a user-provided list of CORS repositories,
+using a templated string just like RTKLIB’s URL_LIST.txt
 
 <http://www.epncb.oma.be/ftp/center/data/BKGI.RDC>
 <https://igs.bkg.bund.de/root_ftp/IGS/highrate/2020/263/l/>
@@ -53,13 +56,12 @@ And the development version from [GitHub](https://github.com/) with:
 devtools::install_github("fpirotti/rRINEX")
 ```
 
-To run the interface this software makes sure
-that you have all necessary packages installed so it might take a while to start
-the first time....
+To run the interface this software makes sure that you have all
+necessary packages installed so it might take a while to start the first
+time....
 
 ``` r
-shiny::runGitHub(“rRINEX”, “fpirotti”, subdir = “data-raw/rtklibShinyApp/”)
-
+shiny::runApp(appDir = "data-raw/rtklibShinyApp/")
 ```
 
 ## Examples

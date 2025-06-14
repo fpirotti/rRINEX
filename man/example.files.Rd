@@ -3,14 +3,14 @@
 \docType{data}
 \name{example.files}
 \alias{example.files}
-\title{Example data
---}
+\title{\subsection{Example data}{
+}}
 \format{
 A list with  some examples RINEX files.
 \itemize{
-  \item obs.rover exampleRover.20o a RINEX 3.01 format file 
-  \item nav       exampleNav.20o a RINEX 3.01 format file 
-  \item obs.base  exampleObsBaseStation.20o a RINEX 3.01 format file 
+\item obs.rover exampleRover.20o a RINEX 3.01 format file
+\item nav       exampleNav.20o a RINEX 3.01 format file
+\item obs.base  exampleObsBaseStation.20o a RINEX 3.01 format file
 }
 }
 \usage{

@@ -12,9 +12,9 @@ readrnxhApproxPosition(f = NULL)
 \value{
 list with a tue items:
 \itemize{
- \item APPROX.POSITION.XYZ - Cartesian coordinate in ECEF system of approximate 
- position
- \item APPROX.POSITION.LATLONG - Geographic coordinate in longitude and latitude
+\item APPROX.POSITION.XYZ - Cartesian coordinate in ECEF system of approximate
+position
+\item APPROX.POSITION.LATLONG - Geographic coordinate in longitude and latitude
 }
 }
 \description{

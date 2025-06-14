@@ -7,9 +7,11 @@
 check_time_interval(interval, units = "secs")
 }
 \arguments{
-\item{interval}{character value, (not numeric to allow sub-microsecond precision) 
- - can reach nanosecond precision
-by using for example 3.000000008}
+\item{interval}{character value, (not numeric to allow sub-microsecond precision)
+\itemize{
+\item can reach nanosecond precision
+by using for example 3.000000008
+}}
 
 \item{units}{charact, for now only  "secs" supported, in future also , "mins",
 "hours", "days", "weeks"}

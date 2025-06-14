@@ -69,50 +69,64 @@
 #'
 #' @docType data
 #'  
-#' @format A list with information on  RINEX terminaology
+#' @format A list with information on  RINEX terminology
 #' \itemize{
 #'   \item rinex.type exampleRover.20o a RINEX 3.01 format file 
-#'   J: QZSS
-#'   C: BDS
-#'   I: IRNSS
-#'   S: SBAS payload
-#'   M: Mixed
-#' 
-#'   \item rinex.band     
-#'   1 = L1 (GPS, QZSS, SBAS,BDS)
-#'      G1 (GLO)
-#'      E1 (GAL)
-#'      B1 (BDS)
-#'  2 = L2 (GPS, QZSS)
-#'      G2 (GLO)
-#'      B1-2 (BDS)
-#'  4 = G1a (GLO)
-#'  5 = L5 (GPS, QZSS, SBAS,
-#'          IRNSS)
-#'      E5a (GAL)
-#'      B2/B2a (BDS)
-#'  6 = E6 (GAL)
-#'      L6 (QZSS)
-#'      B3 (BDS)
-#'      G2a (GLO)
-#'  7 = E5b (GAL)
-#'      B2/B2b (BDS)
-#'  8 = E5a+b (GAL)
-#'      B2a+b (BDS)
-#'    
-#'   \item rinex.type      C = Code / Pseudorange
-#'    L = Phase
-#'    D = Doppler
-#'    S = Raw signal strength(carrier to noise ratio)
-#'    I = Ionosphere phase delay
-#'    X = Receiver channel numbers
+#'   
+#'   | **Type** | **Value**  | 
+#'   | ----- | ------------ | 
+#'   | **J** | QZSS         |                             
+#'   | **C** | BDS          |                           
+#'   | **I** | IRNSS        |                            
+#'   | **S** | SBAS payload |                                    
+#'   | **M** | Mixed        |                            
+#'                                      
+#'   \item rinex.band 
+#'       
+#'   | **Band** | **type**  | 
+#'   | ----- | ------------------------------------------- | 
+#'   | 1 |     L1 (GPS, QZSS, SBAS,BDS)                  |                                
+#'   |   |     G1 (GLO)                                  |                
+#'   |   |     E1 (GAL)                                  |                
+#'   |   |     B1 (BDS)                                  |                
+#'   | 2 |     L2 (GPS, QZSS)                            |                      
+#'   |   |     G2 (GLO)                                  |                
+#'   |   |     B1-2 (BDS)                                |                  
+#'   | 4 |     G1a (GLO)                                 |                 
+#'   | 5 |     L5 (GPS, QZSS, SBAS,   IRNSS)             |       
+#'   |   |     E5a (GAL)                                 |                 
+#'   |   |     B2/B2a (BDS)                              |                    
+#'   | 6 |     E6 (GAL)                                  |                
+#'   |   |     L6 (QZSS)                                 |                 
+#'   |   |     B3 (BDS)                                  |                
+#'   |   |     G2a (GLO)                                 |                 
+#'   | 7 |     E5b (GAL)                                 |                 
+#'   |   |     B2/B2b (BDS)                              |                    
+#'   | 8 |     E5a+b (GAL)                               |                   
+#'   |   |     B2a+b (BDS)                               |                   
+#'   |   |                                               | 
+#'        
+#'   \item rinex.type    
+#'   | **Code** | **type**  | 
+#'   | ----- | ------------------------------------------- |                                          
+#'   | **C** | Code / Pseudorange                          |
+#'   | **L** | Phase                                       |          
+#'   | **D** | Doppler                                     |     
+#'   | **S** | Raw signal strength(carrier to noise ratio) |  
+#'   | **I** | Ionosphere phase delay                      |                
+#'   | **X** | Receiver channel numbers                    |                   
 #'    
 #'   \item rinex.satellite_system  
-#'   G: GPS
-#'   R: GLONASS
-#'   E: Galileo
-#' 
-#' } 
+#' | **Code**  | **GNSS System**       |
+#' | ----- | ----------------- |
+#' | **G** | GPS               |
+#' | **R** | GLONASS           |
+#' | **E** | Galileo           |
+#' | **C** | BeiDou (BDS)      |
+#' | **J** | QZSS              |
+#' | **I** | IRNSS             |
+#' | **S** | SBAS              |
+#' | **M** | Mixed or Multiple |
 #' 
 #' @export
 #' 
