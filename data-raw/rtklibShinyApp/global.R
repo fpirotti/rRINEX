@@ -1,25 +1,14 @@
+
 list.of.packages <- c("leaflet", "leafem", "shiny", "shinydashboard", "shinydashboardPlus",
                       "shinyWidgets", "shinyjs", "shinyjqui", "plotly", "leaflet.extras" )
-new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)>0) {
-  message("The following packages are required before running:
-",
-        paste(new.packages, collapse = " - "), "
-... type YES or Y and press return to install them ")
-  var = readline()
-  if( toupper(var)=="Y" || toupper(var)=="YES") install.packages(new.packages)
-  
+ip <- installed.packages()[,"Package"]
+if(!is.element("pacman", ip)) {
+  message("Please wait while we install the necessary packages....")
+  install.packages("pacman")
 }
 
-library(leaflet)
-library(leafem)
-library(shiny)
-library(shinydashboard)
-library(shinydashboardPlus)
-library(shinyWidgets)
-library(shinyjs)
-library(shinyjqui)
 
+pacman::p_load(list.of.packages, character.only = TRUE)
 
  
 

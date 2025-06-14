@@ -51,16 +51,27 @@ function(req) {
                     height = "36px")
             )
         ), 
-        dashboardSidebar(  ),
+        dashboardSidebar( 
+            tags$div(
+                shiny::actionButton("help", "Help", icon("question")) ,
+                title="Open "  
+            ), 
+            tags$div(
+                fileInput('files', 'UPLOAD Rinex Obs', multiple = TRUE, accept = c('.crx', '.rnx', '.*')), 
+                title="Maximum file size is 5 MB - compressed versions are allowed, also Hatanaka"    
+            ) 
+           
+            
+            ),
         dashboardBody(
             useShinyjs(),
             
             
             
-            PLOTWINDOW(),
-            POSTPROCESSWINDOW(),
-            CONVWINDOW(),
-            OPTIONSWINDOW(),
+            # PLOTWINDOW(),
+            # POSTPROCESSWINDOW(),
+            # CONVWINDOW(),
+            # OPTIONSWINDOW(),
             leafletOutput("rinexMap"),
             
             div(

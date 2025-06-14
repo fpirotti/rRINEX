@@ -9,7 +9,7 @@ Authors@R:
              email = "francesco.pirotti@unipd.it",
              comment = c(ORCID = "0000-0002-4796-6406") ) )
 Maintainer: Francesco Pirotti <francesco.pirotti@unipd.it>
-Description: Reads RINEX observation data, hooks up with 'RTKLIB'  (<http://www.rtklib.com/>) to use rnx2rtkp executable.
+Description: Reads RINEX observation data, hooks up with 'RTKLIB'  (<http://www.rtklib.com/>) to use rnx2rtkp executable. Raw data and data-processing scripts are stored in the 'data-raw/' directory, which is not installed with the package.
 License: MIT + file LICENSE
 Depends: R (>= 3.5.0) 
 Date: 2021-01-15
@@ -17,8 +17,7 @@ Language: en-US
 Encoding: UTF-8
 LazyData: true   
 URL: https://github.com/fpirotti/rRINEX  
-BugReports: https://github.com/fpirotti/rRINEX/issues
-RoxygenNote: 7.2.0
+BugReports: https://github.com/fpirotti/rRINEX/issues 
 Imports: 
     tools,
     R.utils,
@@ -27,14 +26,9 @@ Imports:
     pingr,
     RCurl,
     XML,
-    mgsub,
-    data.table,
-    nanotime,
-    bit64,
-    plyr,
-    Rcpp,
-    stringr,
-    fpeek,
+    mgsub, 
+    nanotime,  
+    Rcpp, 
     proj4
 Suggests: 
     shiny,

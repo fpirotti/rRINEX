@@ -22,7 +22,7 @@
 #' 
 #' @examples
 #' ef<-rRINEX::example.files  
-#' crx2rnx(ef$obs2.base)
+#' # crx2rnx(ef$obs2.base)
 #' 
 crx2rnx<-function(filepath){
   if(is.null(filepath) || !file.exists(filepath)){

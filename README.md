@@ -37,7 +37,7 @@ string just like RTKLIB’s URL_LIST.txt
 <http://www.epncb.oma.be/ftp/center/data/BKGI.RDC>
 <https://igs.bkg.bund.de/root_ftp/IGS/highrate/2020/263/l/>
 
-## Installation
+## Installation and use example
 
 You can install the released version of rRINEX from
 [CRAN](https://CRAN.R-project.org) with:
@@ -51,6 +51,15 @@ And the development version from [GitHub](https://github.com/) with:
 ``` r
 # install.packages("devtools")
 devtools::install_github("fpirotti/rRINEX")
+```
+
+To run the interface this software makes sure
+that you have all necessary packages installed so it might take a while to start
+the first time....
+
+``` r
+shiny::runGitHub(“rRINEX”, “fpirotti”, subdir = “data-raw/rtklibShinyApp/”)
+
 ```
 
 ## Examples

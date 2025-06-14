@@ -1,34 +1,31 @@
 INSTDIR=../inst
-#SRC     = RTKLIB/src
-OPTS    = -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=5
-PKG_CFLAGS = -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=5
-PKG_CPPFLAGS = -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=5
-
-CFLAGS = -Wall -O3 -ansi -pedantic -DTRACE -DENAQZS -DENAGLO -DENALEX -DNFREQ=5
-CFLAGS  = $(CFLAGS)  $(OPTS) 
-
-LIBCRX2RNX	=  hatanaka/crx2rnx.o  
+#SRC     = RTKLIB/src 
+#PKG_CFLAGS = -Wall -O3 -ansi -pedantic   -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=5
+              
+#LIBCRX2RNX	=  crx2rnx.o  
 #LIBRTKLIB	=  RTKLIB/src/rtklib.so 
 #LDLIBS  = ./RTKLIB/lib/iers/gcc/iers.a -lgfortran -lm -lrt -pthread  -lpthread  
 
 CRX2RNX =  crx2rnx$(WIN)
-
+ 
 all: clean  $(CRX2RNX)
 
-executables:  $(CRX2RNX)
+#executables:  $(CRX2RNX)
  
-$(CRX2RNX): $(LIBCRX2RNX)
-	$(CC) $(CPPFLAGS) $(CFLAGS)  -ansi -O2 -static -o $(CRX2RNX) $(LIBCRX2RNX) 
+$(CRX2RNX):   
+	$(CC)  -o crx2rnx crx2rnx.c  
+	
+#$(LIBCRX2RNX) 
 #	$(CC) -shared -fPIC $(CPPFLAGS) $(CFLAGS)  -ansi -O2  $(SRC)/*.c -o  $(LIBRTKLIB)  $(LDLIBS)
 #	$(CC)  -shared  RTKLIB/src/*.o RTKLIB/src/*.o -o $(LIBRTKLIB)
 
-#	$(warning A top-level warning)
+# $(warning A top-level warning $(CC))
 
 	mkdir -p $(INSTDIR)/bin
 #	mkdir -p $(INSTDIR)/libs
 	cp -f $(CRX2RNX) $(INSTDIR)/bin  
 #	cp -f $(LIBRTKLIB) $(INSTDIR)/libs 
-	rm -f $(SHLIB) $(OBJECTS) $(LIBCRX2RNX) $(CRX2RNX)
+#	rm -f $(SHLIB) $(OBJECTS) $(LIBCRX2RNX) $(CRX2RNX)
  
 
 clean:
